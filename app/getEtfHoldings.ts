@@ -3,6 +3,7 @@ import puppeteer from "puppeteer";
 
 export type Stock = {
 	ticker: string;
+	name: string;
 	percent: number;
 };
 export type EtfHoldings = {
@@ -14,7 +15,6 @@ async function getEtfHoldings(
 	prevState: any,
 	queryData: any
 ): Promise<EtfHoldings> {
-	console.log({ prevState, queryData });
 	const etf = queryData.get("etf");
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
@@ -24,19 +24,22 @@ async function getEtfHoldings(
 
 	await page.locator('ul.paginationOptions li[rowcount="60"]').click();
 
-	await page.locator("tbody#tthHoldingsTbody").wait();
-
 	let holdings = new Array<Stock>();
 
 	let currentPage = 1;
 	let morePages = true;
 
 	while (morePages) {
+		await page.locator("tbody#tthHoldingsTbody").wait();
+
 		const rows = await page.$$("tbody#tthHoldingsTbody tr");
 
 		for (const row of rows) {
 			const ticker =
 				(await row.$eval("td.symbol", (el) => el.textContent)) || "";
+
+			const name =
+				(await row.$eval("td:nth-of-type(2)", (el) => el.textContent)) || "";
 
 			const percent =
 				+(
@@ -44,12 +47,13 @@ async function getEtfHoldings(
 						el.getAttribute("tsraw")
 					)) || 0
 				) / 100;
-			holdings.push({ ticker, percent });
+			holdings.push({ ticker, name, percent });
 		}
 
 		try {
 			await page.click(`ul.pageControls li[pagenumber="${currentPage + 1}"]`);
 			currentPage++;
+			await page.waitForNetworkIdle();
 		} catch (e) {
 			morePages = false;
 		}
