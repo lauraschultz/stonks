@@ -1,21 +1,14 @@
 "use server";
 import puppeteer from "puppeteer";
-
-export type Stock = {
-	ticker: string;
-	name: string;
-	percent: number;
-};
-export type EtfHoldings = {
-	ticker: string;
-	holdings: Stock[];
-};
+import { EtfHoldings } from "./types/EtfHoldings";
+import { Stock } from "./types/Stock";
 
 async function getEtfHoldings(
 	prevState: any,
 	queryData: any
 ): Promise<EtfHoldings> {
 	const etf = queryData.get("etf");
+	console.log({ queryData });
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(

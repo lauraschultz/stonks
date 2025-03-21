@@ -1,6 +1,6 @@
 "use client";
-import { useActionState, useState } from "react";
-import getEtfHoldings, { EtfHoldings } from "./getEtfHoldings";
+import { useActionState } from "react";
+import getEtfHoldings from "./getEtfHoldings";
 
 export default function EtfSearch() {
 	const [state, action, loading] = useActionState(getEtfHoldings, null);
