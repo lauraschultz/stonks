@@ -35,7 +35,7 @@ export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
 		const rows = await page.$$("tbody#tthHoldingsTbody tr");
 
 		for (const row of rows) {
-			const ticker =
+			const symbol =
 				(await row.$eval("td.symbol", (el) => el.textContent)) || "";
 
 			const name =
@@ -46,7 +46,7 @@ export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
 					el.getAttribute("tsraw")
 				)) || 0
 			);
-			holdings.push({ ticker, name, percent });
+			holdings.push({ symbol, name, percent });
 		}
 
 		try {
@@ -57,6 +57,6 @@ export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
 			morePages = false;
 		}
 	}
-	await setEtfCache(etf, { ticker: etf, holdings });
-	return Promise.resolve({ ticker: etf, holdings });
+	await setEtfCache(etf, { symbol: etf, holdings });
+	return Promise.resolve({ symbol: etf, holdings });
 }

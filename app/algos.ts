@@ -14,7 +14,7 @@ const rebalance = (
 ): EtfHoldings => {
 	// only include stocks which are not in nogo list and for which we know the ticker symbol
 	const filteredStocks = etfHoldings.holdings.filter(
-		(st) => !noGoList.includes(st.ticker) && st.ticker.match(/[a-zA-Z]+/)
+		(st) => !noGoList.includes(st.symbol) && st.symbol.match(/[a-zA-Z]+/)
 	);
 	const totalPercent = filteredStocks.reduce(
 		(acc, curr) => acc + curr.percent,
@@ -22,7 +22,7 @@ const rebalance = (
 	);
 
 	return {
-		ticker: etfHoldings.ticker,
+		symbol: etfHoldings.symbol,
 		holdings: filteredStocks.map((st) => ({
 			...st,
 			percent: st.percent / totalPercent,
@@ -46,22 +46,22 @@ function etfToStockV1(
 	const stockPortfolio: Map<string, PortfolioStock> = new Map();
 
 	portfolioEtf.forEach((etf) => {
-		const balancedEft = etfHoldingsRebalanced.find(
-			(e) => e.ticker === e.ticker
+		const balancedEtf = etfHoldingsRebalanced.find(
+			(e) => e.symbol === etf.symbol
 		);
-		balancedEft?.holdings.forEach((stock) => {
+		balancedEtf?.holdings.forEach((stock) => {
 			const desiredValue =
 				totalPortfolioValue * (etf.percent / 100) * stock.percent;
-			const quotePrice = stockQuotes[stock.ticker]?.quote?.askPrice;
+			const quotePrice = stockQuotes[stock.symbol]?.quote?.askPrice;
 			if (quotePrice) {
-				const curr = stockPortfolio.get(stock.ticker);
+				const curr = stockPortfolio.get(stock.symbol);
 				const currentQuantity =
 					portfolio.securitiesAccount.positions.find(
-						(p: any) => p.instrument.symbol === stock.ticker
+						(p: any) => p.instrument.symbol === stock.symbol
 					)?.settledLongQuantity || 0;
 
-				stockPortfolio.set(stock.ticker, {
-					symbol: stock.ticker,
+				stockPortfolio.set(stock.symbol, {
+					symbol: stock.symbol,
 					quotePrice,
 					portfolioPercent:
 						(curr?.portfolioPercent ?? 0) + (etf.percent / 100) * stock.percent,
@@ -71,9 +71,10 @@ function etfToStockV1(
 						desiredValue / quotePrice -
 						currentQuantity,
 				});
+				console.log(`adding ${stock.symbol}`);
 			} else {
-				console.log(`Cannot find value for ${stock.ticker}`);
-				console.log(stockQuotes[stock.ticker]);
+				console.log(`Cannot find value for ${stock.symbol}`);
+				console.log(stockQuotes[stock.symbol]);
 			}
 		});
 	});
@@ -86,14 +87,14 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 	const nogoList = await getNoGoList();
 	const etfHoldings = await Promise.all(
 		portfolioEtf.map((etf) => {
-			return getEtfHoldings(etf.ticker);
+			return getEtfHoldings(etf.symbol);
 		})
 	).then((result) => result.map((etf) => rebalance(etf, nogoList)));
 
 	const allStocks = etfHoldings
 		.map((etf) => etf.holdings)
 		.flat()
-		.map((holdings) => holdings.ticker);
+		.map((holdings) => holdings.symbol);
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
 
 	return etfToStockV1(portfolio[0], portfolioEtf, stockQuotes, etfHoldings);

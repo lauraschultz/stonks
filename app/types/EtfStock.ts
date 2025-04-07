@@ -1,5 +1,5 @@
 export type EtfStock = {
-	ticker: string;
+	symbol: string;
 	name: string;
 	percent: number;
 };

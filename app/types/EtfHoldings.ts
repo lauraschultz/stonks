@@ -1,6 +1,6 @@
 import { EtfStock } from "./EtfStock";
 
 export type EtfHoldings = {
-	ticker: string;
+	symbol: string;
 	holdings: EtfStock[];
 };

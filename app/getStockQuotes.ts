@@ -22,6 +22,7 @@ export async function getStockQuotes(tickers: string[]): Promise<any> {
 	};
 
 	try {
+		// TODO this doesnt work!
 		return Promise.all(
 			new Array(requests).fill(null).map((_, i) =>
 				genRequest(i * limit, (i + 1) * limit)

@@ -1,0 +1,64 @@
+{
+	"data": {
+		"symbol": "cruz",
+		"holdings": [
+			{ "symbol": "RCL", "name": "Royal Caribbean Group", "percent": 8.25 },
+			{
+				"symbol": "HLT",
+				"name": "Hilton Worldwide Holdings Inc",
+				"percent": 8.18
+			},
+			{
+				"symbol": "MAR",
+				"name": "Marriott International Inc Class A",
+				"percent": 8.03
+			},
+			{ "symbol": "DAL", "name": "Delta Air Lines Inc", "percent": 6.55 },
+			{ "symbol": "CCL", "name": "Carnival Corp", "percent": 5.5 },
+			{
+				"symbol": "UAL",
+				"name": "United Airlines Holdings Inc",
+				"percent": 4.97
+			},
+			{
+				"symbol": "IHG",
+				"name": "InterContinental Hotels Group PLC ADR",
+				"percent": 3.93
+			},
+			{
+				"symbol": "RYAAY",
+				"name": "Ryanair Holdings PLC ADR",
+				"percent": 3.62
+			},
+			{ "symbol": "HTHT", "name": "H World Group Ltd ADR", "percent": 2.81 },
+			{
+				"symbol": "--",
+				"name": "International Consolidated Airlines Grou...",
+				"percent": 2.59
+			},
+			{ "symbol": "--", "name": "Accor SA", "percent": 2.56 },
+			{ "symbol": "LUV", "name": "Southwest Airlines Co", "percent": 2.26 },
+			{ "symbol": "--", "name": "Singapore Airlines Ltd", "percent": 2.25 },
+			{
+				"symbol": "NCLH",
+				"name": "Norwegian Cruise Line Holdings Ltd",
+				"percent": 2.02
+			},
+			{
+				"symbol": "AAL",
+				"name": "American Airlines Group Inc",
+				"percent": 1.75
+			},
+			{ "symbol": "HST", "name": "Host Hotels & Resorts Inc", "percent": 1.65 },
+			{ "symbol": "ALK", "name": "Alaska Air Group Inc", "percent": 1.64 },
+			{ "symbol": "--", "name": "Whitbread PLC", "percent": 1.62 },
+			{
+				"symbol": "WH",
+				"name": "Wyndham Hotels & Resorts Inc Ordinary Sh...",
+				"percent": 1.51
+			},
+			{ "symbol": "--", "name": "Deutsche Lufthansa AG", "percent": 1.47 }
+		]
+	},
+	"expiresAt": 1744071260332
+}

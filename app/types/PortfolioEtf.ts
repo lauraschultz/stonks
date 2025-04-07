@@ -1,4 +1,4 @@
 export type PortfolioEtf = {
-	ticker: string;
+	symbol: string;
 	percent: number;
 };

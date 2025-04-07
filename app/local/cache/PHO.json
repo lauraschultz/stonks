@@ -1,1 +1,89 @@
-{"data":{"ticker":"pho","holdings":[{"ticker":"ROP","name":"Roper Technologies Inc","percent":8.3},{"ticker":"ECL","name":"Ecolab Inc","percent":7.75},{"ticker":"FERG","name":"Ferguson Enterprises Inc","percent":7.63},{"ticker":"WAT","name":"Waters Corp","percent":6.85},{"ticker":"XYL","name":"Xylem Inc","percent":6.22},{"ticker":"AWK","name":"American Water Works Co Inc","percent":4.42},{"ticker":"TTEK","name":"Tetra Tech Inc","percent":4.34},{"ticker":"CNM","name":"Core & Main Inc Class A","percent":4.1},{"ticker":"AOS","name":"A.O. Smith Corp","percent":4.09},{"ticker":"VLTO","name":"Veralto Corp","percent":4.06},{"ticker":"ACM","name":"AECOM","percent":3.94},{"ticker":"PNR","name":"Pentair PLC","percent":3.89},{"ticker":"IEX","name":"IDEX Corp","percent":3.88},{"ticker":"WMS","name":"Advanced Drainage Systems Inc","percent":3.68},{"ticker":"TTC","name":"The Toro Co","percent":3.45},{"ticker":"MLI","name":"Mueller Industries Inc","percent":3.39},{"ticker":"ITRI","name":"Itron Inc","percent":2.77},{"ticker":"WTRG","name":"Essential Utilities Inc","percent":2.64},{"ticker":"BMI","name":"Badger Meter Inc","percent":2.02},{"ticker":"VMI","name":"Valmont Industries Inc","percent":1.69}]},"expiresAt":1744033924828}
+{
+	"data": {
+		"symbol": "pho",
+		"holdings": [
+			{ "symbol": "ROP", "name": "Roper Technologies Inc", "percent": 8.3 },
+			{ "symbol": "ECL", "name": "Ecolab Inc", "percent": 7.75 },
+			{ "symbol": "FERG", "name": "Ferguson Enterprises Inc", "percent": 7.63 },
+			{ "symbol": "WAT", "name": "Waters Corp", "percent": 6.85 },
+			{ "symbol": "XYL", "name": "Xylem Inc", "percent": 6.22 },
+			{
+				"symbol": "AWK",
+				"name": "American Water Works Co Inc",
+				"percent": 4.42
+			},
+			{ "symbol": "TTEK", "name": "Tetra Tech Inc", "percent": 4.34 },
+			{ "symbol": "CNM", "name": "Core & Main Inc Class A", "percent": 4.1 },
+			{ "symbol": "AOS", "name": "A.O. Smith Corp", "percent": 4.09 },
+			{ "symbol": "VLTO", "name": "Veralto Corp", "percent": 4.06 },
+			{ "symbol": "ACM", "name": "AECOM", "percent": 3.94 },
+			{ "symbol": "PNR", "name": "Pentair PLC", "percent": 3.89 },
+			{ "symbol": "IEX", "name": "IDEX Corp", "percent": 3.88 },
+			{
+				"symbol": "WMS",
+				"name": "Advanced Drainage Systems Inc",
+				"percent": 3.68
+			},
+			{ "symbol": "TTC", "name": "The Toro Co", "percent": 3.45 },
+			{ "symbol": "MLI", "name": "Mueller Industries Inc", "percent": 3.39 },
+			{ "symbol": "ITRI", "name": "Itron Inc", "percent": 2.77 },
+			{ "symbol": "WTRG", "name": "Essential Utilities Inc", "percent": 2.64 },
+			{ "symbol": "BMI", "name": "Badger Meter Inc", "percent": 2.02 },
+			{ "symbol": "VMI", "name": "Valmont Industries Inc", "percent": 1.69 },
+			{
+				"symbol": "WTS",
+				"name": "Watts Water Technologies Inc Class A",
+				"percent": 1.65
+			},
+			{
+				"symbol": "ZWS",
+				"name": "Zurn Elkay Water Solutions Corp",
+				"percent": 1.64
+			},
+			{
+				"symbol": "MWA",
+				"name": "Mueller Water Products Inc Class A share...",
+				"percent": 1.51
+			},
+			{ "symbol": "FELE", "name": "Franklin Electric Co Inc", "percent": 0.88 },
+			{
+				"symbol": "CWT",
+				"name": "California Water Service Group",
+				"percent": 0.84
+			},
+			{ "symbol": "AWR", "name": "American States Water Co", "percent": 0.76 },
+			{
+				"symbol": "SBS",
+				"name": "Companhia De Saneamento Basico Do Estado...",
+				"percent": 0.69
+			},
+			{ "symbol": "SJW", "name": "SJW Group", "percent": 0.68 },
+			{ "symbol": "STN", "name": "Stantec Inc", "percent": 0.52 },
+			{ "symbol": "LNN", "name": "Lindsay Corp", "percent": 0.46 },
+			{ "symbol": "MSEX", "name": "Middlesex Water Co", "percent": 0.42 },
+			{ "symbol": "ERII", "name": "Energy Recovery Inc", "percent": 0.24 },
+			{ "symbol": "NWPX", "name": "Northwest Pipe Co", "percent": 0.16 },
+			{ "symbol": "GRC", "name": "Gorman-Rupp Co", "percent": 0.12 },
+			{ "symbol": "YORW", "name": "The York Water Co", "percent": 0.11 },
+			{ "symbol": "CWCO", "name": "Consolidated Water Co Ltd", "percent": 0.1 },
+			{
+				"symbol": "ARTNA",
+				"name": "Artesian Resources Corp Class A",
+				"percent": 0.06
+			},
+			{
+				"symbol": "AGPXX",
+				"name": "Invesco Shrt-Trm Inv Gov&Agcy Instl",
+				"percent": 0.03
+			},
+			{
+				"symbol": "GWRS",
+				"name": "Global Water Resources Inc",
+				"percent": 0.02
+			},
+			{ "symbol": "--", "name": "Cash", "percent": 0 },
+			{ "symbol": "--", "name": "Securities Lending - Bnym", "percent": 0 }
+		]
+	},
+	"expiresAt": 1744071262516
+}

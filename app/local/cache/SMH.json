@@ -1,0 +1,50 @@
+{
+	"data": {
+		"symbol": "smh",
+		"holdings": [
+			{ "symbol": "NVDA", "name": "NVIDIA Corp", "percent": 19.66 },
+			{
+				"symbol": "TSM",
+				"name": "Taiwan Semiconductor Manufacturing Co Lt...",
+				"percent": 11.26
+			},
+			{ "symbol": "AVGO", "name": "Broadcom Inc", "percent": 7.89 },
+			{ "symbol": "QCOM", "name": "Qualcomm Inc", "percent": 5.2 },
+			{ "symbol": "ASML", "name": "ASML Holding NV ADR", "percent": 4.9 },
+			{
+				"symbol": "AMD",
+				"name": "Advanced Micro Devices Inc",
+				"percent": 4.74
+			},
+			{ "symbol": "TXN", "name": "Texas Instruments Inc", "percent": 4.7 },
+			{ "symbol": "AMAT", "name": "Applied Materials Inc", "percent": 4.6 },
+			{ "symbol": "ADI", "name": "Analog Devices Inc", "percent": 4.48 },
+			{ "symbol": "KLAC", "name": "KLA Corp", "percent": 4.3 },
+			{ "symbol": "MU", "name": "Micron Technology Inc", "percent": 4.3 },
+			{ "symbol": "INTC", "name": "Intel Corp", "percent": 4.1 },
+			{ "symbol": "LRCX", "name": "Lam Research Corp", "percent": 3.75 },
+			{
+				"symbol": "CDNS",
+				"name": "Cadence Design Systems Inc",
+				"percent": 3.38
+			},
+			{ "symbol": "SNPS", "name": "Synopsys Inc", "percent": 3.24 },
+			{ "symbol": "MRVL", "name": "Marvell Technology Inc", "percent": 2.2 },
+			{ "symbol": "NXPI", "name": "NXP Semiconductors NV", "percent": 2 },
+			{
+				"symbol": "MPWR",
+				"name": "Monolithic Power Systems Inc",
+				"percent": 1.14
+			},
+			{ "symbol": "MCHP", "name": "Microchip Technology Inc", "percent": 1.12 },
+			{ "symbol": "STM", "name": "STMicroelectronics NV ADR", "percent": 0.83 },
+			{ "symbol": "ON", "name": "ON Semiconductor Corp", "percent": 0.63 },
+			{ "symbol": "TER", "name": "Teradyne Inc", "percent": 0.54 },
+			{ "symbol": "SWKS", "name": "Skyworks Solutions Inc", "percent": 0.47 },
+			{ "symbol": "QRVO", "name": "Qorvo Inc", "percent": 0.3 },
+			{ "symbol": "OLED", "name": "Universal Display Corp", "percent": 0.28 },
+			{ "symbol": "--", "name": "Us Dollar", "percent": 0 }
+		]
+	},
+	"expiresAt": 1744071261387
+}

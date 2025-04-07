@@ -17,7 +17,7 @@ const generateChartData = (portfolio: PortfolioEtf[]) => {
 	const totalInvested = portfolio.reduce((acc, curr) => curr.percent + acc, 0);
 
 	return {
-		labels: [...portfolio?.map((etf) => etf.ticker), "Uninvested"],
+		labels: [...portfolio?.map((etf) => etf.symbol), "Uninvested"],
 		datasets: [
 			{
 				data: [...portfolio?.map((etf) => etf.percent), 100 - totalInvested],
@@ -70,7 +70,7 @@ export default function CreatePortfolio() {
 		if (!portfolio) return;
 		setPortfolio((current) => [
 			...current!,
-			{ ticker: newTicker, percent: +newPercent },
+			{ symbol: newTicker, percent: +newPercent },
 		]);
 		setNewTicker("");
 		setNewPercent("");
@@ -105,8 +105,8 @@ export default function CreatePortfolio() {
 				</thead>
 				<tbody>
 					{portfolio?.map((etf, index) => (
-						<tr key={etf.ticker}>
-							<td>{etf.ticker}</td>
+						<tr key={etf.symbol}>
+							<td>{etf.symbol}</td>
 							<td>
 								<input
 									type="number"

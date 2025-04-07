@@ -1,1 +1,43 @@
-{"data":{"ticker":"bug","holdings":[{"ticker":"CHKP","name":"Check Point Software Technologies Ltd","percent":7.28},{"ticker":"CRWD","name":"CrowdStrike Holdings Inc Class A","percent":6.91},{"ticker":"FTNT","name":"Fortinet Inc","percent":6.89},{"ticker":"ZS","name":"Zscaler Inc","percent":6.33},{"ticker":"OKTA","name":"Okta Inc Class A","percent":6.08},{"ticker":"PANW","name":"Palo Alto Networks Inc","percent":5.31},{"ticker":"--","name":"Digital Arts Inc","percent":5.28},{"ticker":"CYBR","name":"CyberArk Software Ltd","percent":5.18},{"ticker":"--","name":"Trend Micro Inc","percent":5.15},{"ticker":"GEN","name":"Gen Digital Inc","percent":5.13},{"ticker":"--","name":"AHNLAB Inc","percent":5},{"ticker":"ATEN","name":"A10 Networks Inc","percent":4.76},{"ticker":"QLYS","name":"Qualys Inc","percent":4.49},{"ticker":"RDWR","name":"Radware Ltd","percent":4.09},{"ticker":"OSPN","name":"OneSpan Inc","percent":3.86},{"ticker":"TENB","name":"Tenable Holdings Inc","percent":3.68},{"ticker":"VRNS","name":"Varonis Systems Inc","percent":3.42},{"ticker":"--","name":"Hennge KK Ordinary Shares","percent":3.3},{"ticker":"S","name":"SentinelOne Inc Class A","percent":3.03},{"ticker":"RPD","name":"Rapid7 Inc","percent":2.81}]},"expiresAt":1744033925386}
+{
+	"data": {
+		"symbol": "bug",
+		"holdings": [
+			{
+				"symbol": "CHKP",
+				"name": "Check Point Software Technologies Ltd",
+				"percent": 7.44
+			},
+			{
+				"symbol": "CRWD",
+				"name": "CrowdStrike Holdings Inc Class A",
+				"percent": 6.73
+			},
+			{ "symbol": "FTNT", "name": "Fortinet Inc", "percent": 6.54 },
+			{ "symbol": "ZS", "name": "Zscaler Inc", "percent": 6.12 },
+			{ "symbol": "OKTA", "name": "Okta Inc Class A", "percent": 6.02 },
+			{ "symbol": "--", "name": "Digital Arts Inc", "percent": 5.56 },
+			{ "symbol": "--", "name": "Trend Micro Inc", "percent": 5.46 },
+			{ "symbol": "--", "name": "AHNLAB Inc", "percent": 5.32 },
+			{ "symbol": "PANW", "name": "Palo Alto Networks Inc", "percent": 5.27 },
+			{ "symbol": "GEN", "name": "Gen Digital Inc", "percent": 5.14 },
+			{ "symbol": "CYBR", "name": "CyberArk Software Ltd", "percent": 5.12 },
+			{ "symbol": "ATEN", "name": "A10 Networks Inc", "percent": 4.64 },
+			{ "symbol": "QLYS", "name": "Qualys Inc", "percent": 4.46 },
+			{ "symbol": "RDWR", "name": "Radware Ltd", "percent": 4.02 },
+			{ "symbol": "OSPN", "name": "OneSpan Inc", "percent": 3.78 },
+			{ "symbol": "TENB", "name": "Tenable Holdings Inc", "percent": 3.63 },
+			{ "symbol": "--", "name": "Hennge KK Ordinary Shares", "percent": 3.53 },
+			{ "symbol": "VRNS", "name": "Varonis Systems Inc", "percent": 3.47 },
+			{ "symbol": "S", "name": "SentinelOne Inc Class A", "percent": 3 },
+			{ "symbol": "RPD", "name": "Rapid7 Inc", "percent": 2.73 },
+			{ "symbol": "TLS", "name": "Telos Corp Ordinary Shares", "percent": 1.8 },
+			{
+				"symbol": "--",
+				"name": "E-mini Nasdaq 100 Future June 25",
+				"percent": 0.13
+			},
+			{ "symbol": "--", "name": "Cash", "percent": 0.08 }
+		]
+	},
+	"expiresAt": 1744071261053
+}

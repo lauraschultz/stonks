@@ -1,0 +1,124 @@
+{
+	"data": {
+		"symbol": "eatv",
+		"holdings": [
+			{
+				"symbol": "MKC",
+				"name": "McCormick & Co Inc Registered Shs Non Vt...",
+				"percent": 7.57
+			},
+			{ "symbol": "--", "name": "GEA Group AG", "percent": 7.32 },
+			{ "symbol": "--", "name": "Tate & Lyle PLC", "percent": 6.22 },
+			{
+				"symbol": "FDP",
+				"name": "Fresh Del Monte Produce Inc",
+				"percent": 5.75
+			},
+			{ "symbol": "DOLE", "name": "Dole PLC", "percent": 5.67 },
+			{ "symbol": "XYL", "name": "Xylem Inc", "percent": 4.3 },
+			{ "symbol": "--", "name": "Kubota Corp", "percent": 4.23 },
+			{ "symbol": "INGR", "name": "Ingredion Inc", "percent": 4.18 },
+			{ "symbol": "--", "name": "Givaudan SA", "percent": 3.77 },
+			{
+				"symbol": "SENEA",
+				"name": "Seneca Foods Corp Class A",
+				"percent": 3.57
+			},
+			{ "symbol": "CNH", "name": "CNH Industrial NV", "percent": 3.44 },
+			{
+				"symbol": "--",
+				"name": "Vitasoy International Holdings Ltd",
+				"percent": 3.42
+			},
+			{
+				"symbol": "--",
+				"name": "SIG Group AG Ordinary Shares",
+				"percent": 3.3
+			},
+			{
+				"symbol": "TAP",
+				"name": "Molson Coors Beverage Co Shs -B- Non-Vot...",
+				"percent": 3.26
+			},
+			{
+				"symbol": "BUD",
+				"name": "Anheuser-Busch InBev SA/NV ADR",
+				"percent": 3
+			},
+			{ "symbol": "--", "name": "DSM Firmenich AG", "percent": 2.88 },
+			{
+				"symbol": "--",
+				"name": "Novonesis (Novozymes) B Class B",
+				"percent": 2.85
+			},
+			{ "symbol": "--", "name": "Corbion NV", "percent": 2.4 },
+			{
+				"symbol": "FGXXX",
+				"name": "First American Government Obligs X",
+				"percent": 2.4
+			},
+			{
+				"symbol": "IFF",
+				"name": "International Flavors & Fragrances Inc",
+				"percent": 2.05
+			},
+			{
+				"symbol": "USFR",
+				"name": "WisdomTree Floating Rate Treasury ETF",
+				"percent": 2.04
+			},
+			{ "symbol": "COCO", "name": "The Vita Coco Co Inc", "percent": 2 },
+			{ "symbol": "ONON", "name": "On Holding AG", "percent": 1.99 },
+			{
+				"symbol": "SXT",
+				"name": "Sensient Technologies Corp",
+				"percent": 1.58
+			},
+			{ "symbol": "--", "name": "Lenzing AG", "percent": 1.53 },
+			{ "symbol": "--", "name": "Evonik Industries AG", "percent": 1.52 },
+			{ "symbol": "ELF", "name": "e.l.f. Beauty Inc", "percent": 1.51 },
+			{ "symbol": "--", "name": "Agronomics Ltd", "percent": 1.24 },
+			{ "symbol": "LMNR", "name": "Limoneira Co", "percent": 0.77 },
+			{ "symbol": "CROX", "name": "Crocs Inc", "percent": 0.68 },
+			{
+				"symbol": "--",
+				"name": "Ultrafabrics Holdings Co Ltd",
+				"percent": 0.66
+			},
+			{
+				"symbol": "LSF",
+				"name": "Laird Superfood Inc Ordinary Shares",
+				"percent": 0.57
+			},
+			{ "symbol": "MGPI", "name": "MGP Ingredients Inc", "percent": 0.48 },
+			{
+				"symbol": "AVO",
+				"name": "Mission Produce Inc Ordinary Shares",
+				"percent": 0.33
+			},
+			{ "symbol": "--", "name": "SunOpta Inc", "percent": 0.27 },
+			{ "symbol": "OTLY", "name": "Oatly Group AB ADR", "percent": 0.26 },
+			{ "symbol": "LW", "name": "Lamb Weston Holdings Inc", "percent": 0.21 },
+			{ "symbol": "BYND", "name": "Beyond Meat Inc", "percent": 0.18 },
+			{ "symbol": "--", "name": "Valsoia SpA", "percent": 0.16 },
+			{
+				"symbol": "VFF",
+				"name": "Village Farms International Inc",
+				"percent": 0.14
+			},
+			{
+				"symbol": "--",
+				"name": "DEPOSITS WITH BROKER FOR SHORT POSITIONS",
+				"percent": 0.14
+			},
+			{ "symbol": "CELH", "name": "Celsius Holdings Inc", "percent": 0.13 },
+			{
+				"symbol": "--",
+				"name": "Lassonde Industries Inc Shs -A- Subord V...",
+				"percent": 0.06
+			},
+			{ "symbol": "--", "name": "US DOLLARS", "percent": null }
+		]
+	},
+	"expiresAt": 1744071262707
+}

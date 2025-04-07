@@ -1,0 +1,40 @@
+{
+	"data": {
+		"symbol": "ihi",
+		"holdings": [
+			{ "symbol": "ABT", "name": "Abbott Laboratories", "percent": 18.75 },
+			{ "symbol": "ISRG", "name": "Intuitive Surgical Inc", "percent": 14.82 },
+			{ "symbol": "BSX", "name": "Boston Scientific Corp", "percent": 11.56 },
+			{ "symbol": "EW", "name": "Edwards Lifesciences Corp", "percent": 4.65 },
+			{ "symbol": "SYK", "name": "Stryker Corp", "percent": 4.59 },
+			{ "symbol": "BDX", "name": "Becton Dickinson & Co", "percent": 4.47 },
+			{ "symbol": "MDT", "name": "Medtronic PLC", "percent": 4.29 },
+			{
+				"symbol": "GEHC",
+				"name": "GE HealthCare Technologies Inc Common St...",
+				"percent": 4.19
+			},
+			{ "symbol": "IDXX", "name": "IDEXX Laboratories Inc", "percent": 4.16 },
+			{ "symbol": "RMD", "name": "ResMed Inc", "percent": 3.9 },
+			{ "symbol": "DXCM", "name": "DexCom Inc", "percent": 3.17 },
+			{
+				"symbol": "ZBH",
+				"name": "Zimmer Biomet Holdings Inc",
+				"percent": 2.67
+			},
+			{ "symbol": "STE", "name": "Steris PLC", "percent": 2.67 },
+			{ "symbol": "PODD", "name": "Insulet Corp", "percent": 2.25 },
+			{ "symbol": "BAX", "name": "Baxter International Inc", "percent": 2.05 },
+			{ "symbol": "HOLX", "name": "Hologic Inc", "percent": 1.62 },
+			{ "symbol": "PEN", "name": "Penumbra Inc", "percent": 1.27 },
+			{
+				"symbol": "GMED",
+				"name": "Globus Medical Inc Class A",
+				"percent": 1.02
+			},
+			{ "symbol": "MASI", "name": "Masimo Corp", "percent": 0.91 },
+			{ "symbol": "TFX", "name": "Teleflex Inc", "percent": 0.78 }
+		]
+	},
+	"expiresAt": 1744071260359
+}

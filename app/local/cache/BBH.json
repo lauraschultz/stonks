@@ -1,0 +1,62 @@
+{
+	"data": {
+		"symbol": "bbh",
+		"holdings": [
+			{ "symbol": "AMGN", "name": "Amgen Inc", "percent": 16.28 },
+			{ "symbol": "GILD", "name": "Gilead Sciences Inc", "percent": 12.73 },
+			{
+				"symbol": "VRTX",
+				"name": "Vertex Pharmaceuticals Inc",
+				"percent": 11.18
+			},
+			{
+				"symbol": "REGN",
+				"name": "Regeneron Pharmaceuticals Inc",
+				"percent": 5.18
+			},
+			{ "symbol": "ARGX", "name": "argenx SE ADR", "percent": 5.13 },
+			{ "symbol": "NTRA", "name": "Natera Inc", "percent": 4.55 },
+			{ "symbol": "IQV", "name": "IQVIA Holdings Inc", "percent": 4.4 },
+			{
+				"symbol": "ALNY",
+				"name": "Alnylam Pharmaceuticals Inc",
+				"percent": 4.39
+			},
+			{ "symbol": "ICLR", "name": "Icon PLC", "percent": 3.47 },
+			{ "symbol": "BIIB", "name": "Biogen Inc", "percent": 3.3 },
+			{
+				"symbol": "--",
+				"name": "Intra-Cellular Therapies Inc",
+				"percent": 2.91
+			},
+			{ "symbol": "ILMN", "name": "Illumina Inc", "percent": 2.8 },
+			{ "symbol": "INSM", "name": "Insmed Inc", "percent": 2.5 },
+			{ "symbol": "BNTX", "name": "BioNTech SE ADR", "percent": 2.39 },
+			{ "symbol": "ONC", "name": "BeiGene Ltd ADR", "percent": 2.24 },
+			{
+				"symbol": "NBIX",
+				"name": "Neurocrine Biosciences Inc",
+				"percent": 2.15
+			},
+			{ "symbol": "MRNA", "name": "Moderna Inc", "percent": 2.13 },
+			{ "symbol": "TECH", "name": "Bio-Techne Corp", "percent": 1.89 },
+			{
+				"symbol": "BMRN",
+				"name": "Biomarin Pharmaceutical Inc",
+				"percent": 1.8
+			},
+			{ "symbol": "INCY", "name": "Incyte Corp", "percent": 1.7 },
+			{
+				"symbol": "CRL",
+				"name": "Charles River Laboratories International...",
+				"percent": 1.52
+			},
+			{ "symbol": "QGEN", "name": "Qiagen NV", "percent": 1.52 },
+			{ "symbol": "RGEN", "name": "Repligen Corp", "percent": 1.36 },
+			{ "symbol": "EXAS", "name": "Exact Sciences Corp", "percent": 1.28 },
+			{ "symbol": "SRPT", "name": "Sarepta Therapeutics Inc", "percent": 1.21 },
+			{ "symbol": "--", "name": "Us Dollar", "percent": 0 }
+		]
+	},
+	"expiresAt": 1744071261459
+}
