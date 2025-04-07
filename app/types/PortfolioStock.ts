@@ -1,5 +1,7 @@
 export type PortfolioStock = {
-	ticker: string;
-	purchasePrice: number;
-	amount: number;
+	symbol: string;
+	quotePrice: number;
+	portfolioPercent: number;
+	quantityRaw: number;
+	diff: number;
 };

@@ -1,14 +1,21 @@
 "use server";
 import puppeteer from "puppeteer";
 import { EtfHoldings } from "./types/EtfHoldings";
-import { Stock } from "./types/Stock";
+import { EtfStock } from "./types/EtfStock";
+import { getEtfCache, setEtfCache } from "./local";
 
-async function getEtfHoldings(
+export async function getEtfHoldingsAction(
 	prevState: any,
 	queryData: any
 ): Promise<EtfHoldings> {
 	const etf = queryData.get("etf");
-	console.log({ queryData });
+	return getEtfHoldings(etf);
+}
+
+export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
+	const cachedFile = await getEtfCache(etf);
+	if (cachedFile) return Promise.resolve(cachedFile);
+
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(
@@ -17,7 +24,7 @@ async function getEtfHoldings(
 
 	await page.locator('ul.paginationOptions li[rowcount="60"]').click();
 
-	let holdings = new Array<Stock>();
+	let holdings = new Array<EtfStock>();
 
 	let currentPage = 1;
 	let morePages = true;
@@ -34,12 +41,11 @@ async function getEtfHoldings(
 			const name =
 				(await row.$eval("td:nth-of-type(2)", (el) => el.textContent)) || "";
 
-			const percent =
-				+(
-					(await row.$eval("td:nth-of-type(3)", (el) =>
-						el.getAttribute("tsraw")
-					)) || 0
-				) / 100;
+			const percent = +(
+				(await row.$eval("td:nth-of-type(3)", (el) =>
+					el.getAttribute("tsraw")
+				)) || 0
+			);
 			holdings.push({ ticker, name, percent });
 		}
 
@@ -51,7 +57,6 @@ async function getEtfHoldings(
 			morePages = false;
 		}
 	}
+	await setEtfCache(etf, { ticker: etf, holdings });
 	return Promise.resolve({ ticker: etf, holdings });
 }
-
-export default getEtfHoldings;

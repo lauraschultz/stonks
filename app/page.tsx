@@ -5,7 +5,7 @@ import getEtfHoldings from "./getEtfHoldings";
 export default function Home() {
 	return (
 		<>
-			<EtfSearch />
+			{/* <EtfSearch /> */}
 			<CreatePortfolio />
 		</>
 	);

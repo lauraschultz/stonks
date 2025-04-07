@@ -1,6 +1,6 @@
-import { Stock } from "./Stock";
+import { EtfStock } from "./EtfStock";
 
 export type EtfHoldings = {
 	ticker: string;
-	holdings: Stock[];
+	holdings: EtfStock[];
 };
