@@ -122,7 +122,7 @@ export async function getUserPortfolio() {
     {
         "securitiesAccount": {
             "type": "MARGIN",
-            "accountNumber": "57900767",
+            "accountNumber": "********",
             "roundTrips": 0,
             "isDayTrader": false,
             "isClosingOnlyRestricted": false,

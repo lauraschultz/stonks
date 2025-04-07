@@ -6,35 +6,36 @@ import { getNoGoList } from "./local";
 import { getUserPortfolio } from "./SchwabApi";
 import { EtfHoldings } from "./types/EtfHoldings";
 import { PortfolioEtf } from "./types/PortfolioEtf";
-import { EtfStock } from "./types/EtfStock";
 import { PortfolioStock } from "./types/PortfolioStock";
+
+const rebalance = (
+	etfHoldings: EtfHoldings,
+	noGoList: string[]
+): EtfHoldings => {
+	// only include stocks which are not in nogo list and for which we know the ticker symbol
+	const filteredStocks = etfHoldings.holdings.filter(
+		(st) => !noGoList.includes(st.ticker) && st.ticker.match(/[a-zA-Z]+/)
+	);
+	const totalPercent = filteredStocks.reduce(
+		(acc, curr) => acc + curr.percent,
+		0
+	);
+
+	return {
+		ticker: etfHoldings.ticker,
+		holdings: filteredStocks.map((st) => ({
+			...st,
+			percent: st.percent / totalPercent,
+		})),
+	};
+};
 
 function etfToStockV1(
 	portfolio: any,
 	portfolioEtf: PortfolioEtf[],
-	noGoList: string[],
 	stockQuotes: any,
-	etfHoldings: EtfHoldings[]
+	etfHoldingsRebalanced: EtfHoldings[]
 ): Map<string, PortfolioStock> {
-	const rebalance = (etf: string): EtfStock[] => {
-		const eftH = etfHoldings.find((e) => e.ticker === etf);
-		if (!eftH) return [];
-
-		// only include stocks which are not in nogo list and for which we know the ticker symbol
-		const filteredStocks = eftH.holdings.filter(
-			(st) => !noGoList.includes(st.ticker) && st.ticker.match(/[a-zA-Z]+/)
-		);
-		const totalPercent = filteredStocks.reduce(
-			(acc, curr) => acc + curr.percent,
-			0
-		);
-
-		return filteredStocks.map((st) => ({
-			...st,
-			percent: st.percent / totalPercent,
-		}));
-	};
-
 	const uninvested = portfolio.securitiesAccount.currentBalances.cashBalance;
 	const totalPortfolioValue =
 		uninvested +
@@ -45,8 +46,10 @@ function etfToStockV1(
 	const stockPortfolio: Map<string, PortfolioStock> = new Map();
 
 	portfolioEtf.forEach((etf) => {
-		const rebalanced = rebalance(etf.ticker);
-		rebalanced.forEach((stock) => {
+		const balancedEft = etfHoldingsRebalanced.find(
+			(e) => e.ticker === e.ticker
+		);
+		balancedEft?.holdings.forEach((stock) => {
 			const desiredValue =
 				totalPortfolioValue * (etf.percent / 100) * stock.percent;
 			const quotePrice = stockQuotes[stock.ticker]?.quote?.askPrice;
@@ -85,7 +88,7 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 		portfolioEtf.map((etf) => {
 			return getEtfHoldings(etf.ticker);
 		})
-	);
+	).then((result) => result.map((etf) => rebalance(etf, nogoList)));
 
 	const allStocks = etfHoldings
 		.map((etf) => etf.holdings)
@@ -93,11 +96,5 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 		.map((holdings) => holdings.ticker);
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
 
-	return etfToStockV1(
-		portfolio[0],
-		portfolioEtf,
-		nogoList,
-		stockQuotes,
-		etfHoldings
-	);
+	return etfToStockV1(portfolio[0], portfolioEtf, stockQuotes, etfHoldings);
 }
