@@ -9,6 +9,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { etfToStock } from "./algos";
 import { PortfolioStock } from "./types/PortfolioStock";
+import StockList from "./StockList";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -47,7 +48,7 @@ export default function CreatePortfolio() {
 		getPortfolio().then(setPortfolio);
 	}, []);
 
-	const [stockList, setStockList] = useState<PortfolioStock[]>();
+	const [stockList, setStockList] = useState<PortfolioStock[] | null>(null);
 	const [generating, setGenerating] = useState(false);
 
 	const [newTicker, setNewTicker] = useState<string>("");
@@ -80,6 +81,7 @@ export default function CreatePortfolio() {
 		setPortfolioLocal(portfolio);
 
 		setGenerating(true);
+		setStockList(null);
 		etfToStock(portfolio)
 			.then((result) => {
 				const stocks = result.values().toArray();
@@ -146,32 +148,7 @@ export default function CreatePortfolio() {
 
 			{generating ? <div>Generating stock portfolio...</div> : <></>}
 
-			{stockList ? (
-				<table>
-					<thead>
-						<tr>
-							<td>Stock</td>
-							<td>Current price</td>
-							<td>Desired %</td>
-							<td>Quantity</td>
-							<td>Diff</td>
-						</tr>
-					</thead>
-					<tbody>
-						{stockList.map((stock) => (
-							<tr key={stock.symbol}>
-								<td>{stock.symbol}</td>
-								<td>{stock.quotePrice}</td>
-								<td>{stock.portfolioPercent}</td>
-								<td>{stock.quantityRaw}</td>
-								<td>{stock.diff}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			) : (
-				<></>
-			)}
+			{stockList ? <StockList stockList={stockList} /> : <></>}
 		</>
 	);
 }

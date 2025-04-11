@@ -97,5 +97,5 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 		.map((holdings) => holdings.symbol);
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
 
-	return etfToStockV1(portfolio[0], portfolioEtf, stockQuotes, etfHoldings);
+	return etfToStockV1(portfolio, portfolioEtf, stockQuotes, etfHoldings);
 }

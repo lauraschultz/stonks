@@ -267,7 +267,7 @@ export async function getUserPortfolio() {
 			},
 		});
 		// console.log(res.data);
-		return res.data;
+		return res.data[0];
 	} catch (e) {
 		console.error(e);
 	}
