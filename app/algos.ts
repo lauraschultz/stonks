@@ -22,7 +22,7 @@ const rebalance = (
 	);
 
 	return {
-		symbol: etfHoldings.symbol,
+		...etfHoldings,
 		holdings: filteredStocks.map((st) => ({
 			...st,
 			percent: st.percent / totalPercent,

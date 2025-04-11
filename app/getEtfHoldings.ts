@@ -8,21 +8,23 @@ export async function getEtfHoldingsAction(
 	prevState: any,
 	queryData: any
 ): Promise<EtfHoldings> {
-	const etf = queryData.get("etf");
-	return getEtfHoldings(etf);
+	const symbol = queryData.get("etf");
+	return getEtfHoldings(symbol);
 }
 
-export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
-	const cachedFile = await getEtfCache(etf);
+export async function getEtfHoldings(symbol: string): Promise<EtfHoldings> {
+	const cachedFile = await getEtfCache(symbol);
 	if (cachedFile) return Promise.resolve(cachedFile);
 
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(
-		`https://www.schwab.wallst.com/schwab/Prospect/research/etfs/schwabETF/index.asp?type=holdings&symbol=${etf}`
+		`https://www.schwab.wallst.com/schwab/Prospect/research/etfs/schwabETF/index.asp?type=holdings&symbol=${symbol}`
 	);
 
 	await page.locator('ul.paginationOptions li[rowcount="60"]').click();
+	const name =
+		(await page.$eval("h2", (el) => el.textContent))?.split(" ETF ")[0] || "";
 
 	let holdings = new Array<EtfStock>();
 
@@ -57,6 +59,8 @@ export async function getEtfHoldings(etf: string): Promise<EtfHoldings> {
 			morePages = false;
 		}
 	}
-	await setEtfCache(etf, { symbol: etf, holdings });
-	return Promise.resolve({ symbol: etf, holdings });
+
+	const etfHoldings = { symbol, holdings, name };
+	await setEtfCache(symbol, etfHoldings);
+	return Promise.resolve(etfHoldings);
 }
