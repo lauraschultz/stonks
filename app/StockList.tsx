@@ -22,7 +22,7 @@ const SortArrow = ({
 }) => {
 	return (
 		<button type="button" className="w-8 h-8 bg-amber-200" onClick={onClick}>
-			{field === state.field ? (state.asc ? "up" : "down") : ""}
+			{field === state.field ? state.asc ? <>▲</> : <>▼</> : ""}
 		</button>
 	);
 };
@@ -32,18 +32,18 @@ const getSortFunction = (field: Field, asc: boolean) => {
 	switch (field) {
 		case "symbol":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(a.symbol < b.symbol ? 1 : -1) * mult;
+				(a.symbol < b.symbol ? -1 : 1) * mult;
 		case "quotePrice":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(a.quotePrice - b.quotePrice) * mult;
+				(b.quotePrice - a.quotePrice) * mult;
 		case "portfolioPercent":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(a.portfolioPercent - b.portfolioPercent) * mult;
+				(b.portfolioPercent - a.portfolioPercent) * mult;
 		case "quantityRaw":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(a.quantityRaw - b.quantityRaw) * mult;
+				(b.quantityRaw - a.quantityRaw) * mult;
 		case "diff":
-			return (a: PortfolioStock, b: PortfolioStock) => (a.diff - b.diff) * mult;
+			return (a: PortfolioStock, b: PortfolioStock) => (b.diff - a.diff) * mult;
 	}
 };
 
@@ -55,19 +55,20 @@ export default function StockList({ stockList }: StockListProps) {
 	});
 
 	const sort = (field: Field, asc: boolean) => {
-		console.log(`SORTING`);
-		console.log({ field, asc });
-		setSorted((current) => current.sort(getSortFunction(field, asc)));
+		setSorted((current) => [...current].sort(getSortFunction(field, asc)));
 	};
 
-	useEffect(() => sort(sortedBy.field, sortedBy.asc), [sortedBy]);
+	useEffect(() => {
+		sort(sortedBy.field, sortedBy.asc);
+	}, [sortedBy]);
 
-	const handleClick = (field: Field) => {
-		if (sortedBy.field === field) {
-			setSortedBy((curr) => ({ ...curr, asc: !curr.asc }));
-			return;
-		}
-		setSortedBy({ field, asc: true });
+	const handleClick = (newField: Field) => {
+		setSortedBy(({ field, asc }) => {
+			if (field === newField) {
+				return { field, asc: !asc };
+			}
+			return { field: newField, asc: true };
+		});
 	};
 
 	return (
