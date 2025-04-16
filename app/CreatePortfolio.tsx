@@ -83,49 +83,76 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 						<Doughnut data={generateChartData(portfolio)} />
 					</div>
 
-					<table>
-						<thead>
-							<tr>
-								<td>ETF</td>
-								<td>Percent</td>
-								<td></td>
+					<table className=" rounded-md my-6 shadow-md">
+						<thead className="rounded-t-md">
+							<tr className="text-lg font-black bg-slate-800 text-slate-50">
+								<td className="rounded-tl-md py-2 px-4">ETF</td>
+								<td className="py-2 px-4">Percent</td>
+								<td className="rounded-tr-md"></td>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody className="">
 							{portfolio?.map((etf, index) => (
-								<tr key={etf.symbol}>
-									<td>{etf.symbol}</td>
-									<td>
+								<tr
+									key={etf.symbol}
+									className={index % 2 === 1 ? "bg-slate-100" : ""}
+								>
+									<td className="px-4 py-1  ">
+										<div className="font-bold">{etf.symbol.toUpperCase()}</div>
+										<div className="italic text-sm text-slate-600">
+											{etf.name}
+										</div>
+									</td>
+									<td className="px-4 py-1">
 										<input
-											type="number"
+											className="border-1 border-slate-300 w-14 py-2 px-4 rounded-xs bg-white"
+											type="text"
 											defaultValue={etf.percent}
 											onChange={(v) => updateEntry(index, +v.target.value)}
 										/>
 									</td>
-									<td>
-										<button onClick={() => removeEntry(index)}>Remove</button>
+									<td className="px-4">
+										<button
+											className="px-4 py-2 bg-rose-800 text-rose-50 rounded-md text-xs font-bold"
+											onClick={() => removeEntry(index)}
+										>
+											Remove
+										</button>
 									</td>
 								</tr>
 							))}
 							<tr>
-								<td>
+								<td className="px-4 pt-1 pb-4 rounded-bl-md">
+									<label
+										htmlFor="ticker"
+										className="uppercase text-xs text-slate-500 font-bold block my-1 relative"
+									>
+										Add new
+									</label>
 									<input
+										className="border-1 border-slate-300 py-2 px-4 rounded-xs bg-white"
 										type="text"
 										name="ticker"
 										value={newTicker}
-										onChange={(v) => setNewTicker(v.target.value)}
+										onChange={(v) => setNewTicker(v.target.value.toUpperCase())}
 									/>
 								</td>
-								<td>
+								<td className="px-4 py-1">
 									<input
+										className="border-1 border-slate-300 w-14 py-2 px-4 rounded-xs bg-white"
 										type="number"
 										name="percent"
 										value={newPercent}
 										onChange={(v) => setNewPercent(v.target.value)}
 									/>
 								</td>
-								<td>
-									<button onClick={() => addEntry()}>Add</button>
+								<td className="px-4 py-1 rounded-br-md">
+									<button
+										className="px-4 py-2 bg-slate-700 text-slate-50 rounded-md font-bold"
+										onClick={() => addEntry()}
+									>
+										Add
+									</button>
 								</td>
 							</tr>
 						</tbody>
