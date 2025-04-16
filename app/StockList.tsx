@@ -121,10 +121,10 @@ export default function StockList({ stockList }: StockListProps) {
 				{sorted.map((stock) => (
 					<tr key={stock.symbol}>
 						<td>{stock.symbol}</td>
-						<td>{stock.quotePrice.toFixed(2)}</td>
+						<td>${stock.quotePrice.toFixed(2)}</td>
 						<td>{stock.portfolioPercent.toFixed(4)}</td>
-						<td>{stock.quantityRaw.toFixed(8)}</td>
-						<td>{stock.diff.toFixed(8)}</td>
+						<td>{stock.quantityRaw.toFixed(2)}</td>
+						<td>{stock.diff.toFixed(2)}</td>
 					</tr>
 				))}
 			</tbody>

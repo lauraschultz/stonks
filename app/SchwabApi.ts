@@ -2,9 +2,10 @@
 
 import axios, { AxiosResponse } from "axios";
 import { promises as fs } from "node:fs";
+import { Order } from "./types/Order";
 
 // returns valid access token
-export async function handleAuth(): Promise<string> {
+export async function getToken(): Promise<string> {
 	// check for valid auth token
 	let accessTokenJson;
 	try {
@@ -114,7 +115,7 @@ export async function refresh(): Promise<string> {
 }
 
 export async function getUserPortfolio() {
-	const token = await handleAuth();
+	const token = await getToken();
 	console.log({ token });
 
 	/**
@@ -266,9 +267,73 @@ export async function getUserPortfolio() {
 				Accept: "application/json",
 			},
 		});
-		// console.log(res.data);
+		console.log(res.data[0].securitiesAccount.positions);
 		return res.data[0];
 	} catch (e) {
 		console.error(e);
 	}
+}
+
+async function getAccountHash() {
+	const token = await getToken();
+
+	return await axios({
+		method: "GET",
+		url: "https://api.schwabapi.com/trader/v1/accounts/accountNumbers",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: "application/json",
+		},
+	})
+		.then((res) => {
+			console.log(res.data);
+			return res.data[0].hashValue;
+		})
+		.catch(console.error);
+}
+
+export async function placeOrders(orders: Order[]) {
+	const accountHash = await getAccountHash();
+	const token = await getToken();
+	const buildRequest = ({ symbol, instruction, quantity }: Order) =>
+		axios({
+			method: "POST",
+			url: `https://api.schwabapi.com/trader/v1/accounts/${accountHash}/orders`,
+			data: {
+				// "price": null,
+				session: "NORMAL",
+				duration: "DAY",
+				orderType: "MARKET",
+				// complexOrderStrategyType: "NONE",
+				// quantity: orders.length,
+				// taxLotMethod: "FIFO",
+				orderLegCollection: [
+					{
+						// orderLegType: order_leg_type,
+						// legId: leg_id,
+						instrument: {
+							symbol,
+							assetType: "EQUITY",
+						},
+						instruction,
+						// positionEffect: "OPENING",
+						quantity,
+					},
+				],
+				orderStrategyType: "SINGLE",
+			},
+			headers: {
+				Authorization: `Bearer ${token}`,
+				Accept: "application/json",
+			},
+		});
+
+	return Promise.all(
+		orders.filter(({ quantity }) => quantity !== 0).map(buildRequest)
+	)
+		.then((res) => {
+			console.log({ res });
+			// return res.data[0].hashValue;
+		})
+		.catch((e) => console.error(e.response?.data?.errors));
 }

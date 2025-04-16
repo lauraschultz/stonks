@@ -1,10 +1,10 @@
 import axios from "axios";
-import { handleAuth } from "./SchwabApi";
+import { getToken } from "./SchwabApi";
 
 export async function getStockQuotes(tickers: string[]): Promise<any> {
 	const limit = 200;
 	const requests = Math.ceil(tickers.length / limit);
-	const token = await handleAuth();
+	const token = await getToken();
 
 	const genRequest = async (start: number, end: number) => {
 		console.log(`Fetching quotes for: ${tickers.slice(start, end).join(",")}`);

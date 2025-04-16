@@ -7,9 +7,11 @@ import { handleCallback } from "./SchwabApi";
 import { useSearchParams } from "next/navigation";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { etfToStock } from "./algos";
+import { buildOrderListV1, etfToStock } from "./algos";
 import { PortfolioStock } from "./types/PortfolioStock";
 import StockList from "./StockList";
+import { Order } from "./types/Order";
+import PlaceOrders from "./PlaceOrders";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -50,6 +52,7 @@ export default function CreatePortfolio() {
 
 	const [stockList, setStockList] = useState<PortfolioStock[] | null>(null);
 	const [generating, setGenerating] = useState(false);
+	const [orders, setOrders] = useState<Order[] | null>(null);
 
 	const [newTicker, setNewTicker] = useState<string>("");
 	const [newPercent, setNewPercent] = useState<string>("");
@@ -82,10 +85,12 @@ export default function CreatePortfolio() {
 
 		setGenerating(true);
 		setStockList(null);
+		setOrders(null);
 		etfToStock(portfolio)
 			.then((result) => {
 				const stocks = result.values().toArray();
 				setStockList(stocks);
+				buildOrderListV1(stocks).then((result) => setOrders(result));
 			})
 			.catch(console.error)
 			.finally(() => setGenerating(false));
@@ -149,6 +154,8 @@ export default function CreatePortfolio() {
 			{generating ? <div>Generating stock portfolio...</div> : <></>}
 
 			{stockList ? <StockList stockList={stockList} /> : <></>}
+
+			{orders ? <PlaceOrders defaultOrders={orders} /> : <></>}
 		</>
 	);
 }

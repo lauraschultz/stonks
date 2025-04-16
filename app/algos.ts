@@ -5,6 +5,7 @@ import { getStockQuotes } from "./getStockQuotes";
 import { getNoGoList } from "./local";
 import { getUserPortfolio } from "./SchwabApi";
 import { EtfHoldings } from "./types/EtfHoldings";
+import { Order } from "./types/Order";
 import { PortfolioEtf } from "./types/PortfolioEtf";
 import { PortfolioStock } from "./types/PortfolioStock";
 
@@ -58,7 +59,7 @@ function etfToStockV1(
 				const currentQuantity =
 					portfolio.securitiesAccount.positions.find(
 						(p: any) => p.instrument.symbol === stock.symbol
-					)?.settledLongQuantity || 0;
+					)?.longQuantity || 0;
 
 				stockPortfolio.set(stock.symbol, {
 					symbol: stock.symbol,
@@ -71,13 +72,15 @@ function etfToStockV1(
 						desiredValue / quotePrice -
 						currentQuantity,
 				});
-				console.log(`adding ${stock.symbol}`);
+				// console.log(`adding ${stock.symbol}`);
 			} else {
 				console.log(`Cannot find value for ${stock.symbol}`);
 				console.log(stockQuotes[stock.symbol]);
 			}
 		});
 	});
+
+	// TODO rebalance again to account for missing symbols, holdings we don't want to sell
 
 	return stockPortfolio;
 }
@@ -98,4 +101,17 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
 
 	return etfToStockV1(portfolio, portfolioEtf, stockQuotes, etfHoldings);
+}
+
+export async function buildOrderListV1(
+	portfolioStocks: PortfolioStock[]
+): Promise<Order[]> {
+	// no selling
+	return portfolioStocks
+		.map(({ symbol, diff }) => ({
+			instruction: "BUY" as "BUY",
+			quantity: Math.floor(Math.max(0, diff)),
+			symbol,
+		}))
+		.sort((a, b) => b.quantity - a.quantity);
 }
