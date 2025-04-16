@@ -7,11 +7,6 @@ import { handleCallback } from "./SchwabApi";
 import { useSearchParams } from "next/navigation";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { buildOrderListV1, etfToStock } from "./algos";
-import { PortfolioStock } from "./types/PortfolioStock";
-import StockList from "./StockList";
-import { Order } from "./types/Order";
-import PlaceOrders from "./PlaceOrders";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -35,7 +30,11 @@ const generateChartData = (portfolio: PortfolioEtf[]) => {
 	};
 };
 
-export default function CreatePortfolio() {
+interface CreatePortfolioProps {
+	onSave: (portfolio: PortfolioEtf[]) => void;
+}
+
+export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 	const searchParams = useSearchParams();
 	const schwabCode = searchParams.get("code");
 	const schwabSession = searchParams.get("session");
@@ -45,14 +44,10 @@ export default function CreatePortfolio() {
 		if (schwabCode && schwabSession) handleCallback(schwabCode);
 	}, [schwabCode, schwabSession]);
 
-	const [portfolio, setPortfolio] = useState<PortfolioEtf[]>([]);
+	const [portfolio, setPortfolio] = useState<PortfolioEtf[] | null>(null);
 	useEffect(() => {
 		getPortfolio().then(setPortfolio);
 	}, []);
-
-	const [stockList, setStockList] = useState<PortfolioStock[] | null>(null);
-	const [generating, setGenerating] = useState(false);
-	const [orders, setOrders] = useState<Order[] | null>(null);
 
 	const [newTicker, setNewTicker] = useState<string>("");
 	const [newPercent, setNewPercent] = useState<string>("");
@@ -80,82 +75,66 @@ export default function CreatePortfolio() {
 		setNewPercent("");
 	};
 
-	const onSave = () => {
-		setPortfolioLocal(portfolio);
-
-		setGenerating(true);
-		setStockList(null);
-		setOrders(null);
-		etfToStock(portfolio)
-			.then((result) => {
-				const stocks = result.values().toArray();
-				setStockList(stocks);
-				buildOrderListV1(stocks).then((result) => setOrders(result));
-			})
-			.catch(console.error)
-			.finally(() => setGenerating(false));
-	};
-
 	return (
 		<>
-			<div className="max-w-md">
-				<Doughnut data={generateChartData(portfolio)} />
-			</div>
+			{portfolio ? (
+				<>
+					<div className="max-w-md">
+						<Doughnut data={generateChartData(portfolio)} />
+					</div>
 
-			<table>
-				<thead>
-					<tr>
-						<td>ETF</td>
-						<td>Percent</td>
-						<td></td>
-					</tr>
-				</thead>
-				<tbody>
-					{portfolio?.map((etf, index) => (
-						<tr key={etf.symbol}>
-							<td>{etf.symbol}</td>
-							<td>
-								<input
-									type="number"
-									defaultValue={etf.percent}
-									onChange={(v) => updateEntry(index, +v.target.value)}
-								/>
-							</td>
-							<td>
-								<button onClick={() => removeEntry(index)}>Remove</button>
-							</td>
-						</tr>
-					))}
-					<tr>
-						<td>
-							<input
-								type="text"
-								name="ticker"
-								value={newTicker}
-								onChange={(v) => setNewTicker(v.target.value)}
-							/>
-						</td>
-						<td>
-							<input
-								type="number"
-								name="percent"
-								value={newPercent}
-								onChange={(v) => setNewPercent(v.target.value)}
-							/>
-						</td>
-						<td>
-							<button onClick={() => addEntry()}>Add</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<button onClick={() => onSave()}>Save</button>
-
-			{generating ? <div>Generating stock portfolio...</div> : <></>}
-
-			{stockList ? <StockList stockList={stockList} /> : <></>}
-
-			{orders ? <PlaceOrders defaultOrders={orders} /> : <></>}
+					<table>
+						<thead>
+							<tr>
+								<td>ETF</td>
+								<td>Percent</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody>
+							{portfolio?.map((etf, index) => (
+								<tr key={etf.symbol}>
+									<td>{etf.symbol}</td>
+									<td>
+										<input
+											type="number"
+											defaultValue={etf.percent}
+											onChange={(v) => updateEntry(index, +v.target.value)}
+										/>
+									</td>
+									<td>
+										<button onClick={() => removeEntry(index)}>Remove</button>
+									</td>
+								</tr>
+							))}
+							<tr>
+								<td>
+									<input
+										type="text"
+										name="ticker"
+										value={newTicker}
+										onChange={(v) => setNewTicker(v.target.value)}
+									/>
+								</td>
+								<td>
+									<input
+										type="number"
+										name="percent"
+										value={newPercent}
+										onChange={(v) => setNewPercent(v.target.value)}
+									/>
+								</td>
+								<td>
+									<button onClick={() => addEntry()}>Add</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<button onClick={() => onSave(portfolio)}>Save</button>
+				</>
+			) : (
+				<>Loading...</>
+			)}
 		</>
 	);
 }

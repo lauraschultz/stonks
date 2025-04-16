@@ -1,12 +1,5 @@
-import CreatePortfolio from "./CreatePortfolio";
-import EtfSearch from "./EtfSearch";
-import getEtfHoldings from "./getEtfHoldings";
+import Home from "./Home";
 
-export default function Home() {
-	return (
-		<>
-			{/* <EtfSearch /> */}
-			<CreatePortfolio />
-		</>
-	);
+export default function Page() {
+	return <Home />;
 }

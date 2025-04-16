@@ -14,10 +14,15 @@ export async function getNoGoList() {
 }
 
 export async function getPortfolio() {
-	const file = await fs.readFile(
-		process.cwd() + "/app/local/portfolio.json",
-		"utf8"
-	);
+	let file;
+	try {
+		file = await fs.readFile(
+			process.cwd() + "/app/local/portfolio.json",
+			"utf8"
+		);
+	} catch (e) {
+		return [];
+	}
 
 	return JSON.parse(file) as PortfolioEtf[];
 }
