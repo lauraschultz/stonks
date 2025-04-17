@@ -16,12 +16,13 @@ export default function Home() {
 	const [orders, setOrders] = useState<Order[] | null>(null);
 
 	const onSavePortfolio = useCallback((portfolio: PortfolioEtf[]) => {
-		setPortfolioLocal(portfolio);
+		const sorted = [...portfolio].sort((a, b) => b.percent - a.percent);
+		setPortfolioLocal(sorted);
 
 		setIsGenerating(true);
 		setStockList(null);
 		setOrders(null);
-		etfToStock(portfolio)
+		etfToStock(sorted)
 			.then((result) => {
 				const stocks = result.values().toArray();
 				setStockList(stocks);
@@ -33,7 +34,7 @@ export default function Home() {
 
 	return (
 		<>
-			<div className="mx-auto my-10 p-8">
+			<div className="mx-auto my-10 p-8 w-[max-content]">
 				<CreatePortfolio onSave={onSavePortfolio} />
 			</div>
 

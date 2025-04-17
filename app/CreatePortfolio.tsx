@@ -15,7 +15,10 @@ const generateChartData = (portfolio: PortfolioEtf[]) => {
 	const totalInvested = portfolio.reduce((acc, curr) => curr.percent + acc, 0);
 
 	return {
-		labels: [...portfolio?.map((etf) => etf.symbol), "Uninvested"],
+		labels: [
+			...portfolio?.map((etf) => etf.symbol.toUpperCase()),
+			"Uninvested",
+		],
 		datasets: [
 			{
 				data: [...portfolio?.map((etf) => etf.percent), 100 - totalInvested],
@@ -140,7 +143,6 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 								<td className="px-4 py-1">
 									<input
 										className="border-1 border-slate-300 w-14 py-2 px-4 rounded-xs bg-white"
-										type="number"
 										name="percent"
 										value={newPercent}
 										onChange={(v) => setNewPercent(v.target.value)}
@@ -157,7 +159,12 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 							</tr>
 						</tbody>
 					</table>
-					<button onClick={() => onSave(portfolio)}>Save</button>
+					<button
+						className="inline-block py-3 px-4 bg-slate-600 text-slate-100 w-full rounded-md text-lg font-black shadow-md"
+						onClick={() => onSave(portfolio)}
+					>
+						Save
+					</button>
 				</>
 			) : (
 				<>Loading...</>
