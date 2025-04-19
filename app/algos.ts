@@ -39,12 +39,8 @@ function etfToStockV1(
 	stockQuotes: { [symbol: string]: EquityQuote },
 	etfHoldingsRebalanced: EtfHoldings[]
 ): Map<string, PortfolioStock> {
-	const uninvested = portfolio.securitiesAccount.currentBalances.cashBalance;
 	const totalPortfolioValue =
-		uninvested +
-		portfolio.securitiesAccount.positions
-			.map((p) => p.settledLongQuantity * p.marketValue)
-			.reduce((acc: number, curr: number) => acc + curr, 0);
+		portfolio.securitiesAccount.currentBalances.equity;
 
 	const stockPortfolio: Map<string, PortfolioStock> = new Map();
 
