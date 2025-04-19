@@ -4,10 +4,12 @@ import { getEtfHoldings } from "./getEtfHoldings";
 import { getStockQuotes } from "./getStockQuotes";
 import { getNoGoList } from "./local";
 import { getUserPortfolio } from "./SchwabApi";
+import { EquityQuote } from "./types/EquityQuote";
 import { EtfHoldings } from "./types/EtfHoldings";
 import { Order } from "./types/Order";
 import { PortfolioEtf } from "./types/PortfolioEtf";
 import { PortfolioStock } from "./types/PortfolioStock";
+import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
 
 const rebalance = (
 	etfHoldings: EtfHoldings,
@@ -32,16 +34,16 @@ const rebalance = (
 };
 
 function etfToStockV1(
-	portfolio: any,
+	portfolio: SchwabUserPortfolio,
 	portfolioEtf: PortfolioEtf[],
-	stockQuotes: any,
+	stockQuotes: { [symbol: string]: EquityQuote },
 	etfHoldingsRebalanced: EtfHoldings[]
 ): Map<string, PortfolioStock> {
 	const uninvested = portfolio.securitiesAccount.currentBalances.cashBalance;
 	const totalPortfolioValue =
 		uninvested +
 		portfolio.securitiesAccount.positions
-			.map((p: any) => p.settledLongQuantity * p.marketValue)
+			.map((p) => p.settledLongQuantity * p.marketValue)
 			.reduce((acc: number, curr: number) => acc + curr, 0);
 
 	const stockPortfolio: Map<string, PortfolioStock> = new Map();
@@ -58,19 +60,19 @@ function etfToStockV1(
 				const curr = stockPortfolio.get(stock.symbol);
 				const currentQuantity =
 					portfolio.securitiesAccount.positions.find(
-						(p: any) => p.instrument.symbol === stock.symbol
+						(p) => p.instrument.symbol === stock.symbol
 					)?.longQuantity || 0;
+
+				const quantityRaw =
+					(curr?.quantityRaw ?? 0) + desiredValue / quotePrice;
 
 				stockPortfolio.set(stock.symbol, {
 					symbol: stock.symbol,
 					quotePrice,
 					portfolioPercent:
 						(curr?.portfolioPercent ?? 0) + (etf.percent / 100) * stock.percent,
-					quantityRaw: (curr?.quantityRaw ?? 0) + desiredValue / quotePrice,
-					diff:
-						(curr?.quantityRaw ?? 0) +
-						desiredValue / quotePrice -
-						currentQuantity,
+					quantityRaw,
+					diff: quantityRaw - currentQuantity,
 				});
 				// console.log(`adding ${stock.symbol}`);
 			} else {

@@ -3,6 +3,7 @@
 import axios, { AxiosResponse } from "axios";
 import { promises as fs } from "node:fs";
 import { Order } from "./types/Order";
+import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
 
 // returns valid access token
 export async function getToken(): Promise<string> {
@@ -114,164 +115,19 @@ export async function refresh(): Promise<string> {
 	return response!.data.access_token;
 }
 
-export async function getUserPortfolio() {
+export async function getUserPortfolio(): Promise<SchwabUserPortfolio> {
 	const token = await getToken();
 	console.log({ token });
 
-	/**
-   * [
-    {
-        "securitiesAccount": {
-            "type": "MARGIN",
-            "accountNumber": "********",
-            "roundTrips": 0,
-            "isDayTrader": false,
-            "isClosingOnlyRestricted": false,
-            "pfcbFlag": false,
-            "positions": [
-                {
-                    "shortQuantity": 0,
-                    "averagePrice": 113.53,
-                    "currentDayProfitLoss": -7.04,
-                    "currentDayProfitLossPercentage": -1.58,
-                    "longQuantity": 4,
-                    "settledLongQuantity": 4,
-                    "settledShortQuantity": 0,
-                    "instrument": {
-                        "assetType": "EQUITY",
-                        "cusip": "67066G104",
-                        "symbol": "NVDA",
-                        "netChange": -2.4199
-                    },
-                    "marketValue": 438.68,
-                    "maintenanceRequirement": 131.6,
-                    "averageLongPrice": 113.53,
-                    "taxLotAverageLongPrice": 113.53,
-                    "longOpenProfitLoss": -15.44,
-                    "previousSessionLongQuantity": 4,
-                    "currentDayCost": 0
-                },
-                {
-                    "shortQuantity": 0,
-                    "averagePrice": 572.32,
-                    "currentDayProfitLoss": -29.2,
-                    "currentDayProfitLossPercentage": -1.29,
-                    "longQuantity": 4,
-                    "settledLongQuantity": 4,
-                    "settledShortQuantity": 0,
-                    "instrument": {
-                        "assetType": "EQUITY",
-                        "cusip": "55354G100",
-                        "symbol": "MSCI",
-                        "netChange": -10.76
-                    },
-                    "marketValue": 2233.88,
-                    "maintenanceRequirement": 670.16,
-                    "averageLongPrice": 572.32,
-                    "taxLotAverageLongPrice": 572.32,
-                    "longOpenProfitLoss": -55.4,
-                    "previousSessionLongQuantity": 4,
-                    "currentDayCost": 0
-                }
-            ],
-            "initialBalances": {
-                "accruedInterest": 0,
-                "availableFundsNonMarginableTrade": 14039.8,
-                "bondValue": 59028,
-                "buyingPower": 29514,
-                "cashBalance": 13367.24,
-                "cashAvailableForTrading": 0,
-                "cashReceipts": 0,
-                "dayTradingBuyingPower": 61487,
-                "dayTradingBuyingPowerCall": 0,
-                "dayTradingEquityCall": 0,
-                "equity": 16039.8,
-                "equityPercentage": 100,
-                "liquidationValue": 16039.8,
-                "longMarginValue": 2672.56,
-                "longOptionMarketValue": 0,
-                "longStockValue": 2672.56,
-                "maintenanceCall": 0,
-                "maintenanceRequirement": 802,
-                "margin": 13367.24,
-                "marginEquity": 16039.8,
-                "moneyMarketFund": 0,
-                "mutualFundValue": 14039.8,
-                "regTCall": 0,
-                "shortMarginValue": 0,
-                "shortOptionMarketValue": 0,
-                "shortStockValue": 0,
-                "totalCash": 0,
-                "isInCall": false,
-                "pendingDeposits": 0,
-                "marginBalance": 0,
-                "shortBalance": 0,
-                "accountValue": 16039.8
-            },
-            "currentBalances": {
-                "accruedInterest": 0,
-                "cashBalance": 13367.24, // uninvested cash
-                "cashReceipts": 0,
-                "longOptionMarketValue": 0,
-                "liquidationValue": 16039.8,
-                "longMarketValue": 2672.56,
-                "moneyMarketFund": 0,
-                "savings": 0,
-                "shortMarketValue": 0,
-                "pendingDeposits": 0,
-                "mutualFundValue": 0,
-                "bondValue": 0,
-                "shortOptionMarketValue": 0,
-                "availableFunds": 14757,
-                "availableFundsNonMarginableTrade": 14757,
-                "buyingPower": 29514,
-                "buyingPowerNonMarginableTrade": 14757,
-                "dayTradingBuyingPower": 61487,
-                "equity": 16039.8,
-                "equityPercentage": 100,
-                "longMarginValue": 2672.56,
-                "maintenanceCall": 0,
-                "maintenanceRequirement": 801.76,
-                "marginBalance": 0,
-                "regTCall": 0,
-                "shortBalance": 0,
-                "shortMarginValue": 0,
-                "sma": 14757
-            },
-            "projectedBalances": {
-                "availableFunds": 14757,
-                "availableFundsNonMarginableTrade": 14757,
-                "buyingPower": 29514,
-                "dayTradingBuyingPower": 61487,
-                "dayTradingBuyingPowerCall": 0,
-                "maintenanceCall": 0,
-                "regTCall": 0,
-                "isInCall": false,
-                "stockBuyingPower": 29514
-            }
-        },
-        "aggregatedBalance": {
-            "currentLiquidationValue": 16039.8,
-            "liquidationValue": 16039.8
-        }
-    }
-]
-   */
-
-	try {
-		const res = await axios({
-			method: "GET",
-			url: "https://api.schwabapi.com/trader/v1/accounts?fields=positions",
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: "application/json",
-			},
-		});
-		console.log(res.data[0].securitiesAccount.positions);
-		return res.data[0];
-	} catch (e) {
-		console.error(e);
-	}
+	const res = await axios({
+		method: "GET",
+		url: "https://api.schwabapi.com/trader/v1/accounts?fields=positions",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: "application/json",
+		},
+	});
+	return res.data[0];
 }
 
 async function getAccountHash() {
