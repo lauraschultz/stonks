@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { promises as fs } from "node:fs";
 import { Order } from "./types/Order";
 import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
+import { SchwabOrders } from "./types/SchwabOrders";
 
 // returns valid access token
 export async function getToken(): Promise<string> {
@@ -127,10 +128,11 @@ export async function getUserPortfolio(): Promise<SchwabUserPortfolio> {
 			Accept: "application/json",
 		},
 	});
+	// console.log(res.data[0]);
 	return res.data[0];
 }
 
-async function getAccountHash() {
+async function getAccountHash(): Promise<string> {
 	const token = await getToken();
 
 	return await axios({
@@ -192,4 +194,23 @@ export async function placeOrders(orders: Order[]) {
 			// return res.data[0].hashValue;
 		})
 		.catch((e) => console.error(e.response?.data?.errors));
+}
+
+export async function getOrders(pending = false): Promise<SchwabOrders[]> {
+	const accountHash = await getAccountHash();
+	const token = await getToken();
+
+	return await axios({
+		method: "GET",
+		url: `https://api.schwabapi.com/trader/v1/accounts/${accountHash}/orders`,
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: "application/json",
+		},
+	}).then((result) =>
+		(result.data as SchwabOrders[]).filter(
+			(o) => !pending || o.status === "PENDING_ACTIVATION"
+		)
+	);
+	// .catch(console.error)
 }

@@ -8,20 +8,21 @@ type Field =
 	| "symbol"
 	| "quotePrice"
 	| "portfolioPercent"
-	| "quantityRaw"
-	| "diff";
+	| "diff"
+	| "diffPercent"
+	| "currentQuantity";
 
 const SortArrow = ({
 	state,
 	field,
-	onClick,
-}: {
+}: // onClick,
+{
 	state: { field: Field; asc: boolean };
 	field: Field;
-	onClick: MouseEventHandler<HTMLButtonElement>;
+	// onClick: MouseEventHandler<HTMLButtonElement>;
 }) => {
 	return (
-		<button type="button" className="w-8 h-8 bg-amber-200" onClick={onClick}>
+		<button type="button" className="ml-2 w-3">
 			{field === state.field ? state.asc ? <>▲</> : <>▼</> : ""}
 		</button>
 	);
@@ -39,11 +40,15 @@ const getSortFunction = (field: Field, asc: boolean) => {
 		case "portfolioPercent":
 			return (a: PortfolioStock, b: PortfolioStock) =>
 				(b.portfolioPercent - a.portfolioPercent) * mult;
-		case "quantityRaw":
+		case "currentQuantity":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.quantityRaw - a.quantityRaw) * mult;
+				(b.currentQuantity - a.currentQuantity) * mult;
 		case "diff":
-			return (a: PortfolioStock, b: PortfolioStock) => (b.diff - a.diff) * mult;
+			return (a: PortfolioStock, b: PortfolioStock) =>
+				(b.diffQuantity - a.diffQuantity) * mult;
+		case "diffPercent":
+			return (a: PortfolioStock, b: PortfolioStock) =>
+				(b.diffPercent - a.diffPercent) * mult;
 	}
 };
 
@@ -72,59 +77,66 @@ export default function StockList({ stockList }: StockListProps) {
 	};
 
 	return (
-		<table>
+		<table className="my-6 shadow-md">
 			<thead>
-				<tr>
-					<td>
-						Stock{" "}
-						<SortArrow
-							state={sortedBy}
-							field="symbol"
-							onClick={() => handleClick("symbol")}
-						/>
+				<tr className="text-md font-black">
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("symbol")}
+					>
+						Stock
+						<SortArrow state={sortedBy} field="symbol" />
 					</td>
-					<td>
-						Current price &nbsp;
-						<SortArrow
-							state={sortedBy}
-							field="quotePrice"
-							onClick={() => handleClick("quotePrice")}
-						/>
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("quotePrice")}
+					>
+						Current price
+						<SortArrow state={sortedBy} field="quotePrice" />
 					</td>
-					<td>
-						Desired %{" "}
-						<SortArrow
-							state={sortedBy}
-							field="portfolioPercent"
-							onClick={() => handleClick("portfolioPercent")}
-						/>
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("currentQuantity")}
+					>
+						Current quantity
+						<SortArrow state={sortedBy} field="currentQuantity" />
 					</td>
-					<td>
-						Quantity
-						<SortArrow
-							state={sortedBy}
-							field="quantityRaw"
-							onClick={() => handleClick("quantityRaw")}
-						/>
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("portfolioPercent")}
+					>
+						Desired %
+						<SortArrow state={sortedBy} field="portfolioPercent" />
 					</td>
-					<td>
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("diffPercent")}
+					>
+						Diff % (raw)
+						<SortArrow state={sortedBy} field="diffPercent" />
+					</td>
+					<td
+						className="cursor-pointer py-2 px-4"
+						onClick={() => handleClick("diff")}
+					>
 						Diff
-						<SortArrow
-							state={sortedBy}
-							field="diff"
-							onClick={() => handleClick("diff")}
-						/>
+						<SortArrow state={sortedBy} field="diff" />
 					</td>
 				</tr>
 			</thead>
 			<tbody>
-				{sorted.map((stock) => (
-					<tr key={stock.symbol}>
-						<td>{stock.symbol}</td>
-						<td>${stock.quotePrice.toFixed(2)}</td>
-						<td>{stock.portfolioPercent.toFixed(4)}</td>
-						<td>{stock.quantityRaw.toFixed(2)}</td>
-						<td>{stock.diff.toFixed(2)}</td>
+				{sorted.map((stock, i) => (
+					<tr key={stock.symbol} className={i % 2 === 0 ? "bg-slate-100" : ""}>
+						<td className="py-1 px-4">{stock.symbol}</td>
+						<td className="py-1 px-4">${stock.quotePrice.toFixed(2)}</td>
+						<td className="py-1 px-4">{stock.currentQuantity}</td>
+						<td className="py-1 px-4 font-mono">
+							{stock.portfolioPercent.toFixed(2)}
+						</td>
+						<td className="py-1 px-4 font-mono">
+							{stock.diffPercent.toFixed(2)}
+						</td>
+						<td className="py-1 px-4">{stock.diffQuantity}</td>
 					</tr>
 				))}
 			</tbody>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreatePortfolio from "./CreatePortfolio";
 import { PortfolioEtf } from "./types/PortfolioEtf";
 import { setPortfolio as setPortfolioLocal } from "./local";
@@ -9,11 +9,18 @@ import { Order } from "./types/Order";
 import { buildOrderListV1, etfToStock } from "./algos";
 import PlaceOrders from "./PlaceOrders";
 import StockList from "./StockList";
+import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
+import { getUserPortfolio } from "./SchwabApi";
 
 export default function Home() {
 	const [isGenerating, setIsGenerating] = useState<boolean>(false);
 	const [stockList, setStockList] = useState<PortfolioStock[] | null>(null);
 	const [orders, setOrders] = useState<Order[] | null>(null);
+	const [userPortfolio, setUserPortfolio] = useState<SchwabUserPortfolio>();
+
+	useEffect(() => {
+		getUserPortfolio().then((result) => setUserPortfolio(result));
+	}, []);
 
 	const onSavePortfolio = useCallback((portfolio: PortfolioEtf[]) => {
 		const sorted = [...portfolio].sort((a, b) => b.percent - a.percent);
@@ -23,10 +30,11 @@ export default function Home() {
 		setStockList(null);
 		setOrders(null);
 		etfToStock(sorted)
-			.then((result) => {
-				const stocks = result.values().toArray();
+			.then((stocks) => {
 				setStockList(stocks);
-				buildOrderListV1(stocks).then((result) => setOrders(result));
+				buildOrderListV1(stocks, userPortfolio!).then((result) =>
+					setOrders(result)
+				);
 			})
 			.catch(console.error)
 			.finally(() => setIsGenerating(false));
@@ -37,6 +45,18 @@ export default function Home() {
 			<div className="mx-auto my-10 p-8 w-[max-content]">
 				<CreatePortfolio onSave={onSavePortfolio} />
 			</div>
+
+			<p className="my-4 text-lg italic">
+				Current portfolio value is{" "}
+				<span className="font-bold">
+					${userPortfolio?.securitiesAccount.currentBalances.equity}
+				</span>
+				,{" "}
+				<span className="font-bold">
+					${userPortfolio?.securitiesAccount.currentBalances.cashBalance}
+				</span>{" "}
+				of which is uninvested cash.
+			</p>
 
 			{isGenerating ? <div>Generating stock portfolio...</div> : <></>}
 

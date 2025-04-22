@@ -10,6 +10,7 @@ import { Order } from "./types/Order";
 import { PortfolioEtf } from "./types/PortfolioEtf";
 import { PortfolioStock } from "./types/PortfolioStock";
 import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
+import { Settings } from "./types/Settings";
 
 const rebalance = (
 	etfHoldings: EtfHoldings,
@@ -37,40 +38,43 @@ function etfToStockV1(
 	portfolio: SchwabUserPortfolio,
 	portfolioEtf: PortfolioEtf[],
 	stockQuotes: { [symbol: string]: EquityQuote },
-	etfHoldingsRebalanced: EtfHoldings[]
-): Map<string, PortfolioStock> {
+	etfHoldingsRebalanced: EtfHoldings[],
+	settings: Settings
+): PortfolioStock[] {
 	const totalPortfolioValue =
 		portfolio.securitiesAccount.currentBalances.equity;
+	console.log(portfolio.securitiesAccount.currentBalances);
+	console.log(portfolio.securitiesAccount.initalBalances);
 
-	const stockPortfolio: Map<string, PortfolioStock> = new Map();
+	const stockPortfolio: Map<
+		string,
+		Omit<PortfolioStock, "diffQuantity">
+	> = new Map();
 
 	portfolioEtf.forEach((etf) => {
 		const balancedEtf = etfHoldingsRebalanced.find(
 			(e) => e.symbol === etf.symbol
 		);
 		balancedEtf?.holdings.forEach((stock) => {
-			const desiredValue =
-				totalPortfolioValue * (etf.percent / 100) * stock.percent;
 			const quotePrice = stockQuotes[stock.symbol]?.quote?.askPrice;
 			if (quotePrice) {
 				const curr = stockPortfolio.get(stock.symbol);
-				const currentQuantity =
-					portfolio.securitiesAccount.positions.find(
-						(p) => p.instrument.symbol === stock.symbol
-					)?.longQuantity || 0;
+				const portfolioPosition = portfolio.securitiesAccount.positions.find(
+					(p) => p.instrument.symbol === stock.symbol
+				);
+				const currentQuantity = portfolioPosition?.longQuantity || 0;
+				const currentPercent =
+					(portfolioPosition?.marketValue || 0) / totalPortfolioValue;
 
-				const quantityRaw =
-					(curr?.quantityRaw ?? 0) + desiredValue / quotePrice;
-
+				const portfolioPercent =
+					(curr?.portfolioPercent ?? 0) + (etf.percent / 100) * stock.percent;
 				stockPortfolio.set(stock.symbol, {
 					symbol: stock.symbol,
 					quotePrice,
-					portfolioPercent:
-						(curr?.portfolioPercent ?? 0) + (etf.percent / 100) * stock.percent,
-					quantityRaw,
-					diff: quantityRaw - currentQuantity,
+					portfolioPercent,
+					diffPercent: portfolioPercent - currentPercent,
+					currentQuantity,
 				});
-				// console.log(`adding ${stock.symbol}`);
 			} else {
 				console.log(`Cannot find value for ${stock.symbol}`);
 				console.log(stockQuotes[stock.symbol]);
@@ -78,9 +82,20 @@ function etfToStockV1(
 		});
 	});
 
-	// TODO rebalance again to account for missing symbols, holdings we don't want to sell
+	const stockPortfolioArr = stockPortfolio.values().toArray();
+	let balancedTotalPercent = stockPortfolioArr.reduce((acc, curr) => {
+		if (curr.diffPercent > 0) return curr.diffPercent + acc;
+		return acc;
+	}, 0);
 
-	return stockPortfolio;
+	const stockPortfolioArrBalanced = stockPortfolioArr.map((s) => {
+		const maxSpend =
+			Math.max(0, s.diffPercent / balancedTotalPercent) *
+			portfolio.securitiesAccount.currentBalances.cashBalance;
+		return { ...s, diffQuantity: Math.floor(maxSpend / s.quotePrice) };
+	});
+	// let cashBalance = portfolio.securitiesAccount.currentBalances.cashBalance;
+	return stockPortfolioArrBalanced;
 }
 
 export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
@@ -97,19 +112,27 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 		.flat()
 		.map((holdings) => holdings.symbol);
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
+	// console.log(stockQuotes);
 
-	return etfToStockV1(portfolio, portfolioEtf, stockQuotes, etfHoldings);
+	return etfToStockV1(portfolio, portfolioEtf, stockQuotes, etfHoldings, {
+		sell: false,
+		impatience: 0,
+		ramdomness: 0,
+	});
 }
 
 export async function buildOrderListV1(
-	portfolioStocks: PortfolioStock[]
+	portfolioStocks: PortfolioStock[],
+	portfolio: SchwabUserPortfolio
 ): Promise<Order[]> {
 	// no selling
 	return portfolioStocks
-		.map(({ symbol, diff }) => ({
-			instruction: "BUY" as "BUY",
-			quantity: Math.floor(Math.max(0, diff)),
-			symbol,
-		}))
+		.map(({ symbol, diffQuantity }) => {
+			return {
+				instruction: "BUY" as "BUY",
+				quantity: diffQuantity,
+				symbol,
+			};
+		})
 		.sort((a, b) => b.quantity - a.quantity);
 }

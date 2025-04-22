@@ -86,7 +86,7 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 						<Doughnut data={generateChartData(portfolio)} />
 					</div>
 
-					<table className=" rounded-md my-6 shadow-md">
+					<table className="my-6 shadow-md">
 						<thead className="rounded-t-md">
 							<tr className="text-lg font-black bg-slate-800 text-slate-50">
 								<td className="rounded-tl-md py-2 px-4">ETF</td>
