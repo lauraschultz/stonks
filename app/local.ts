@@ -33,7 +33,7 @@ export async function setPortfolio(portfolio: PortfolioEtf[]) {
 	);
 }
 
-const etfExpiry = 7 * 44 * 60 * 1000; // 7 days
+const etfExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export async function setEtfCache(etf: string, etfHoldings: EtfHoldings) {
 	await fs.writeFile(
