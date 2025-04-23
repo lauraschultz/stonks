@@ -47,15 +47,15 @@ export default function Home() {
 			</div>
 
 			<p className="my-4 text-lg italic">
-				Current portfolio value is{" "}
+				Current portfolio value is $
 				<span className="font-bold">
-					${userPortfolio?.securitiesAccount.currentBalances.equity}
+					{userPortfolio?.securitiesAccount.currentBalances.equity}
 				</span>
-				,{" "}
+				, of which $
 				<span className="font-bold">
-					${userPortfolio?.securitiesAccount.currentBalances.cashBalance}
+					{userPortfolio?.securitiesAccount.currentBalances.cashBalance}
 				</span>{" "}
-				of which is uninvested cash.
+				is uninvested cash.
 			</p>
 
 			{isGenerating ? <div>Generating stock portfolio...</div> : <></>}

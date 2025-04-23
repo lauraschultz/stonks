@@ -48,7 +48,7 @@ function etfToStockV1(
 
 	const stockPortfolio: Map<
 		string,
-		Omit<PortfolioStock, "diffQuantity">
+		Omit<PortfolioStock, "diffQuantityNormal" | "diffPercentNormal">
 	> = new Map();
 
 	portfolioEtf.forEach((etf) => {
@@ -72,7 +72,7 @@ function etfToStockV1(
 					symbol: stock.symbol,
 					quotePrice,
 					portfolioPercent,
-					diffPercent: portfolioPercent - currentPercent,
+					diffPercentRaw: portfolioPercent - currentPercent,
 					currentQuantity,
 				});
 			} else {
@@ -84,17 +84,21 @@ function etfToStockV1(
 
 	const stockPortfolioArr = stockPortfolio.values().toArray();
 	let balancedTotalPercent = stockPortfolioArr.reduce((acc, curr) => {
-		if (curr.diffPercent > 0) return curr.diffPercent + acc;
+		if (curr.diffPercentRaw > 0) return curr.diffPercentRaw + acc;
 		return acc;
 	}, 0);
 
 	const stockPortfolioArrBalanced = stockPortfolioArr.map((s) => {
+		const diffPercentNormal = s.diffPercentRaw / balancedTotalPercent;
 		const maxSpend =
-			Math.max(0, s.diffPercent / balancedTotalPercent) *
+			diffPercentNormal *
 			portfolio.securitiesAccount.currentBalances.cashBalance;
-		return { ...s, diffQuantity: Math.floor(maxSpend / s.quotePrice) };
+		return {
+			...s,
+			diffQuantityNormal: maxSpend / s.quotePrice,
+			diffPercentNormal,
+		};
 	});
-	// let cashBalance = portfolio.securitiesAccount.currentBalances.cashBalance;
 	return stockPortfolioArrBalanced;
 }
 
@@ -127,7 +131,7 @@ export async function buildOrderListV1(
 ): Promise<Order[]> {
 	// no selling
 	return portfolioStocks
-		.map(({ symbol, diffQuantity }) => {
+		.map(({ symbol, diffQuantityNormal: diffQuantity }) => {
 			return {
 				instruction: "BUY" as "BUY",
 				quantity: diffQuantity,

@@ -1,25 +1,17 @@
-import { MouseEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PortfolioStock } from "./types/PortfolioStock";
 
 interface StockListProps {
 	stockList: PortfolioStock[];
 }
-type Field =
-	| "symbol"
-	| "quotePrice"
-	| "portfolioPercent"
-	| "diff"
-	| "diffPercent"
-	| "currentQuantity";
+type Field = keyof PortfolioStock;
 
 const SortArrow = ({
 	state,
 	field,
-}: // onClick,
-{
+}: {
 	state: { field: Field; asc: boolean };
 	field: Field;
-	// onClick: MouseEventHandler<HTMLButtonElement>;
 }) => {
 	return (
 		<button type="button" className="ml-2 w-3">
@@ -34,28 +26,16 @@ const getSortFunction = (field: Field, asc: boolean) => {
 		case "symbol":
 			return (a: PortfolioStock, b: PortfolioStock) =>
 				(a.symbol < b.symbol ? -1 : 1) * mult;
-		case "quotePrice":
+		default:
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.quotePrice - a.quotePrice) * mult;
-		case "portfolioPercent":
-			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.portfolioPercent - a.portfolioPercent) * mult;
-		case "currentQuantity":
-			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.currentQuantity - a.currentQuantity) * mult;
-		case "diff":
-			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.diffQuantity - a.diffQuantity) * mult;
-		case "diffPercent":
-			return (a: PortfolioStock, b: PortfolioStock) =>
-				(b.diffPercent - a.diffPercent) * mult;
+				(a[field] < b[field] ? 1 : -1) * mult;
 	}
 };
 
 export default function StockList({ stockList }: StockListProps) {
 	const [sorted, setSorted] = useState(stockList);
 	const [sortedBy, setSortedBy] = useState<{ field: Field; asc: boolean }>({
-		field: "diff",
+		field: "diffQuantityNormal",
 		asc: true,
 	});
 
@@ -110,17 +90,17 @@ export default function StockList({ stockList }: StockListProps) {
 					</td>
 					<td
 						className="cursor-pointer py-2 px-4"
-						onClick={() => handleClick("diffPercent")}
+						onClick={() => handleClick("diffPercentNormal")}
 					>
-						Diff % (raw)
-						<SortArrow state={sortedBy} field="diffPercent" />
+						Diff % (normalized)
+						<SortArrow state={sortedBy} field="diffPercentNormal" />
 					</td>
 					<td
 						className="cursor-pointer py-2 px-4"
-						onClick={() => handleClick("diff")}
+						onClick={() => handleClick("diffQuantityNormal")}
 					>
-						Diff
-						<SortArrow state={sortedBy} field="diff" />
+						Diff (count)
+						<SortArrow state={sortedBy} field="diffQuantityNormal" />
 					</td>
 				</tr>
 			</thead>
@@ -131,12 +111,14 @@ export default function StockList({ stockList }: StockListProps) {
 						<td className="py-1 px-4">${stock.quotePrice.toFixed(2)}</td>
 						<td className="py-1 px-4">{stock.currentQuantity}</td>
 						<td className="py-1 px-4 font-mono">
-							{stock.portfolioPercent.toFixed(2)}
+							{stock.portfolioPercent.toFixed(4)}
 						</td>
 						<td className="py-1 px-4 font-mono">
-							{stock.diffPercent.toFixed(2)}
+							{stock.diffPercentNormal.toFixed(4)}
 						</td>
-						<td className="py-1 px-4">{stock.diffQuantity}</td>
+						<td className="py-1 px-4 font-mono">
+							{stock.diffQuantityNormal.toFixed(4)}
+						</td>
 					</tr>
 				))}
 			</tbody>
