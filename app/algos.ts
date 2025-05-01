@@ -12,39 +12,66 @@ import { PortfolioStock } from "./types/PortfolioStock";
 import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
 import { Settings } from "./types/Settings";
 
-const rebalance = (
-	etfHoldings: EtfHoldings,
-	noGoList: string[]
-): EtfHoldings => {
-	// only include stocks which are not in nogo list and for which we know the ticker symbol
-	const filteredStocks = etfHoldings.holdings.filter(
-		(st) => !noGoList.includes(st.symbol) && st.symbol.match(/[a-zA-Z]+/)
+const validateEquityType = (equityQuote: EquityQuote) => {
+	if (equityQuote?.assetMainType !== "EQUITY") return false;
+	if (!equityQuote.assetSubType) return true;
+	return (
+		equityQuote.assetSubType === "COE" || equityQuote.assetSubType === "ADR"
 	);
-	const totalPercent = filteredStocks.reduce(
-		(acc, curr) => acc + curr.percent,
-		0
-	);
-
-	return {
-		...etfHoldings,
-		holdings: filteredStocks.map((st) => ({
-			...st,
-			percent: st.percent / totalPercent,
-		})),
-	};
 };
 
 function etfToStockV1(
 	portfolio: SchwabUserPortfolio,
 	portfolioEtf: PortfolioEtf[],
 	stockQuotes: { [symbol: string]: EquityQuote },
-	etfHoldingsRebalanced: EtfHoldings[],
-	settings: Settings
+	etfHoldings: EtfHoldings[],
+	settings: Settings,
+	noGoList: string[]
 ): PortfolioStock[] {
+	const rebalance = (etfHoldings: EtfHoldings): EtfHoldings => {
+		// console.log(`rebalancing ${etfHoldings.symbol}`);
+		// only include stocks which are not in nogo list AND for which we know the ticker symbol AND for which we have a stock quote
+		const filteredStocks = etfHoldings.holdings.filter(({ symbol }) => {
+			if (
+				!noGoList.includes(symbol) &&
+				symbol.match(/[a-zA-Z]+/) &&
+				validateEquityType(stockQuotes[symbol])
+			)
+				return true;
+			// console.log(`removed ${symbol} from holdings`);
+			// console.log(stockQuotes[symbol]);
+			return false;
+		});
+
+		const totalPercent = filteredStocks.reduce(
+			(acc, curr) => acc + curr.percent,
+			0
+		);
+
+		// console.log({ totalPercent });
+
+		return {
+			...etfHoldings,
+			holdings: filteredStocks.map((st) => ({
+				...st,
+				percent: st.percent / totalPercent,
+			})),
+		};
+	};
+
+	const etfHoldingsRebalanced = etfHoldings.map(rebalance);
+
 	const totalPortfolioValue =
 		portfolio.securitiesAccount.currentBalances.equity;
-	console.log(portfolio.securitiesAccount.currentBalances);
-	console.log(portfolio.securitiesAccount.initalBalances);
+
+	const portfolioInvestedPercent =
+		portfolioEtf.reduce((acc, curr) => acc + curr.percent, 0) / 100;
+	const toSpend = Math.min(
+		portfolio.securitiesAccount.currentBalances.cashBalance,
+		totalPortfolioValue * portfolioInvestedPercent
+	);
+
+	console.log({ portfolioInvestedPercent, toSpend });
 
 	const stockPortfolio: Map<
 		string,
@@ -82,19 +109,24 @@ function etfToStockV1(
 		});
 	});
 
+	// now, we need to divide available funds among the non-negative equities
+	// first, find the total % from non-neg equities
 	const stockPortfolioArr = stockPortfolio.values().toArray();
 	let balancedTotalPercent = stockPortfolioArr.reduce((acc, curr) => {
 		if (curr.diffPercentRaw > 0) return curr.diffPercentRaw + acc;
 		return acc;
 	}, 0);
 
+	console.log({ balancedTotalPercent });
+
+	// now divide by balancedTotalPercent to normalize to 100%
 	const stockPortfolioArrBalanced = stockPortfolioArr.map((s) => {
 		const diffPercentNormal = s.diffPercentRaw / balancedTotalPercent;
-		const maxSpend =
-			diffPercentNormal *
-			portfolio.securitiesAccount.currentBalances.cashBalance;
+		const maxSpend = diffPercentNormal * toSpend;
 		return {
 			...s,
+			// should these be negative??
+			// helpful for debugging but misleading, since neg values aren't included in normalized values
 			diffQuantityNormal: maxSpend / s.quotePrice,
 			diffPercentNormal,
 		};
@@ -109,7 +141,8 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 		portfolioEtf.map((etf) => {
 			return getEtfHoldings(etf.symbol);
 		})
-	).then((result) => result.map((etf) => rebalance(etf, nogoList)));
+	);
+	// ).then((result) => result.map((etf) => rebalance(etf, nogoList)));
 
 	const allStocks = etfHoldings
 		.map((etf) => etf.holdings)
@@ -118,11 +151,19 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
 	// console.log(stockQuotes);
 
-	return etfToStockV1(portfolio, portfolioEtf, stockQuotes, etfHoldings, {
-		sell: false,
-		impatience: 0,
-		ramdomness: 0,
-	});
+	return etfToStockV1(
+		portfolio,
+		portfolioEtf,
+		stockQuotes,
+		etfHoldings,
+		{
+			sell: false,
+			weightDiffQuantity: 0,
+			weightDiversity: 0,
+			weightPortfolioPercent: 0,
+		},
+		nogoList
+	);
 }
 
 export async function buildOrderListV1(
@@ -131,10 +172,10 @@ export async function buildOrderListV1(
 ): Promise<Order[]> {
 	// no selling
 	return portfolioStocks
-		.map(({ symbol, diffQuantityNormal: diffQuantity }) => {
+		.map(({ symbol, diffQuantityNormal }) => {
 			return {
 				instruction: "BUY" as "BUY",
-				quantity: diffQuantity,
+				quantity: Math.floor(Math.max(0, diffQuantityNormal)),
 				symbol,
 			};
 		})
