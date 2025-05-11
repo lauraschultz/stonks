@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import CreatePortfolio from "./CreatePortfolio";
 import { PortfolioEtf } from "./types/PortfolioEtf";
-import { setPortfolio as setPortfolioLocal } from "./local";
+import { setPortfolio as setPortfolioLocal, setSettings } from "./local";
 import { PortfolioStock } from "./types/PortfolioStock";
 import { Order } from "./types/Order";
 import { buildOrderListV1, etfToStock } from "./algos";
@@ -11,6 +11,8 @@ import PlaceOrders from "./PlaceOrders";
 import StockList from "./StockList";
 import { SchwabUserPortfolio } from "./types/SchwabUserPortfolio";
 import { getUserPortfolio } from "./SchwabApi";
+import TriangleSelect from "./TriangleSelect";
+import { Settings } from "./types/Settings";
 
 export default function Home() {
 	const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -22,23 +24,27 @@ export default function Home() {
 		getUserPortfolio().then((result) => setUserPortfolio(result));
 	}, []);
 
-	const onSavePortfolio = useCallback((portfolio: PortfolioEtf[]) => {
-		const sorted = [...portfolio].sort((a, b) => b.percent - a.percent);
-		setPortfolioLocal(sorted);
+	const onSavePortfolio = useCallback(
+		async (portfolio: PortfolioEtf[], settings: Settings) => {
+			const sorted = [...portfolio].sort((a, b) => b.percent - a.percent);
+			setPortfolioLocal(sorted);
+			await setSettings(settings);
 
-		setIsGenerating(true);
-		setStockList(null);
-		setOrders(null);
-		etfToStock(sorted)
-			.then((stocks) => {
-				setStockList(stocks);
-				buildOrderListV1(stocks, userPortfolio!).then((result) =>
-					setOrders(result)
-				);
-			})
-			.catch(console.error)
-			.finally(() => setIsGenerating(false));
-	}, []);
+			setIsGenerating(true);
+			setStockList(null);
+			setOrders(null);
+			etfToStock(sorted)
+				.then((stocks) => {
+					setStockList(stocks);
+					buildOrderListV1(stocks, userPortfolio!).then((result) =>
+						setOrders(result)
+					);
+				})
+				.catch(console.error)
+				.finally(() => setIsGenerating(false));
+		},
+		[]
+	);
 
 	return (
 		<>
@@ -62,7 +68,7 @@ export default function Home() {
 
 			{stockList ? <StockList stockList={stockList} /> : <></>}
 
-			{orders ? <PlaceOrders defaultOrders={orders} /> : <></>}
+			{/* {orders ? <PlaceOrders defaultOrders={orders} /> : <></>} */}
 		</>
 	);
 }

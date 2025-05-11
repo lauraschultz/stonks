@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPortfolio, setPortfolio as setPortfolioLocal } from "./local";
+import {
+	getPortfolio,
+	getSettings,
+	setPortfolio as setPortfolioLocal,
+} from "./local";
 import { PortfolioEtf } from "./types/PortfolioEtf";
 import { handleCallback } from "./SchwabApi";
 import { useSearchParams } from "next/navigation";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { Settings } from "./Settings";
+import { Settings as SettingsType } from "./types/Settings";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -34,7 +40,7 @@ const generateChartData = (portfolio: PortfolioEtf[]) => {
 };
 
 interface CreatePortfolioProps {
-	onSave: (portfolio: PortfolioEtf[]) => void;
+	onSave: (portfolio: PortfolioEtf[], settings: SettingsType) => void;
 }
 
 export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
@@ -50,10 +56,13 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 	const [portfolio, setPortfolio] = useState<PortfolioEtf[] | null>(null);
 	useEffect(() => {
 		getPortfolio().then(setPortfolio);
+		getSettings().then(setSettings);
 	}, []);
 
 	const [newTicker, setNewTicker] = useState<string>("");
 	const [newPercent, setNewPercent] = useState<string>("");
+
+	const [settings, setSettings] = useState<SettingsType>();
 
 	const removeEntry = (index: number) => {
 		setPortfolio((current) => current!.filter((_, i) => i !== index));
@@ -85,6 +94,17 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 					<div className="max-w-md">
 						<Doughnut data={generateChartData(portfolio)} />
 					</div>
+
+					{settings ? (
+						<Settings
+							settings={settings}
+							onChange={(n) =>
+								setSettings((curr) => ({ ...curr, ...n } as SettingsType))
+							}
+						/>
+					) : (
+						<></>
+					)}
 
 					<table className="my-6 shadow-md">
 						<thead className="rounded-t-md">
@@ -161,7 +181,7 @@ export default function CreatePortfolio({ onSave }: CreatePortfolioProps) {
 					</table>
 					<button
 						className="inline-block py-3 px-4 bg-slate-600 text-slate-100 w-full rounded-md text-lg font-black shadow-md"
-						onClick={() => onSave(portfolio)}
+						onClick={() => onSave(portfolio, settings!)}
 					>
 						Save
 					</button>

@@ -2,7 +2,7 @@
 
 import { getEtfHoldings } from "./getEtfHoldings";
 import { getStockQuotes } from "./getStockQuotes";
-import { getNoGoList } from "./local";
+import { getNoGoList, getSettings } from "./local";
 import { getUserPortfolio } from "./SchwabApi";
 import { EquityQuote } from "./types/EquityQuote";
 import { EtfHoldings } from "./types/EtfHoldings";
@@ -29,7 +29,6 @@ function etfToStockV1(
 	noGoList: string[]
 ): PortfolioStock[] {
 	const rebalance = (etfHoldings: EtfHoldings): EtfHoldings => {
-		// console.log(`rebalancing ${etfHoldings.symbol}`);
 		// only include stocks which are not in nogo list AND for which we know the ticker symbol AND for which we have a stock quote
 		const filteredStocks = etfHoldings.holdings.filter(({ symbol }) => {
 			if (
@@ -38,8 +37,6 @@ function etfToStockV1(
 				validateEquityType(stockQuotes[symbol])
 			)
 				return true;
-			// console.log(`removed ${symbol} from holdings`);
-			// console.log(stockQuotes[symbol]);
 			return false;
 		});
 
@@ -75,7 +72,10 @@ function etfToStockV1(
 
 	const stockPortfolio: Map<
 		string,
-		Omit<PortfolioStock, "diffQuantityNormal" | "diffPercentNormal">
+		Omit<
+			PortfolioStock,
+			"diffQuantityNormal" | "diffPercentNormal" | "orderQuantity"
+		>
 	> = new Map();
 
 	portfolioEtf.forEach((etf) => {
@@ -120,7 +120,7 @@ function etfToStockV1(
 	console.log({ balancedTotalPercent });
 
 	// now divide by balancedTotalPercent to normalize to 100%
-	const stockPortfolioArrBalanced = stockPortfolioArr.map((s) => {
+	let stockPortfolioArrBalanced = stockPortfolioArr.map((s) => {
 		const diffPercentNormal = s.diffPercentRaw / balancedTotalPercent;
 		const maxSpend = diffPercentNormal * toSpend;
 		return {
@@ -131,7 +131,47 @@ function etfToStockV1(
 			diffPercentNormal,
 		};
 	});
-	return stockPortfolioArrBalanced;
+
+	const maxDiffPercentNormal = stockPortfolioArrBalanced.reduce(
+		(acc, curr) =>
+			curr.diffPercentNormal > acc ? curr.diffPercentNormal : acc,
+		0
+	);
+
+	// get amount spent by buying whole number stocks
+	let spendAmountRemaining = stockPortfolioArrBalanced.reduce((acc, curr) => {
+		return acc - Math.floor(curr.diffQuantityNormal);
+	}, toSpend);
+
+	console.log({ spendAmountRemaining });
+
+	// order all stocks according to fractional diff quantity
+	stockPortfolioArrBalanced.sort((a, b) => {
+		const rank = [a, b].map(
+			(v) =>
+				(v.diffQuantityNormal % 1) * settings.weightDiffQuantity +
+				(v.diffPercentNormal / maxDiffPercentNormal) *
+					settings.weightPortfolioPercent +
+				(v.currentQuantity > 0 ? 0 : 1) * settings.weightDiversity
+		);
+
+		return rank[1] - rank[0];
+	});
+
+	// determine quantity of each to order
+	stockPortfolioArrBalanced = stockPortfolioArrBalanced.map((eq) => {
+		let orderQuantity = Math.floor(Math.max(0, eq.diffQuantityNormal));
+		if (spendAmountRemaining >= eq.quotePrice) {
+			orderQuantity++;
+			spendAmountRemaining -= eq.quotePrice;
+		} else if (settings.patience) {
+			spendAmountRemaining = 0;
+		}
+
+		return { ...eq, orderQuantity };
+	});
+
+	return stockPortfolioArrBalanced as PortfolioStock[];
 }
 
 export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
@@ -142,26 +182,20 @@ export async function etfToStock(portfolioEtf: PortfolioEtf[]) {
 			return getEtfHoldings(etf.symbol);
 		})
 	);
-	// ).then((result) => result.map((etf) => rebalance(etf, nogoList)));
 
 	const allStocks = etfHoldings
 		.map((etf) => etf.holdings)
 		.flat()
 		.map((holdings) => holdings.symbol);
 	const stockQuotes = await getStockQuotes([...new Set(allStocks)]);
-	// console.log(stockQuotes);
+	const settings = await getSettings();
 
 	return etfToStockV1(
 		portfolio,
 		portfolioEtf,
 		stockQuotes,
 		etfHoldings,
-		{
-			sell: false,
-			weightDiffQuantity: 0,
-			weightDiversity: 0,
-			weightPortfolioPercent: 0,
-		},
+		settings,
 		nogoList
 	);
 }
