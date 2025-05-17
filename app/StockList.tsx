@@ -23,6 +23,7 @@ const SortArrow = ({
 };
 
 const displayQuantity = (order: Order | undefined): number => {
+	// console.log("displayQuantity", order?.symbol, order?.quantity);
 	if (!order) return 0;
 	return order.quantity * (order.instruction === "SELL" ? -1 : 1);
 };
@@ -84,16 +85,16 @@ export default function StockList({ stockList }: StockListProps) {
 	}, [setOrders, setShowResetButton]);
 
 	const onChangeOrderQuantity = useCallback(
-		(symbol: string, newValue: number) => {
+		(symbol: string, quantity: number) => {
+			// console.log("onChange ", symbol, quantity);
 			setShowResetButton(true);
-			setOrders((current) => ({
-				...current,
-				[symbol]: {
+			setOrders((current) => {
+				return new Map(current).set(symbol, {
 					symbol,
-					instruction: newValue < 0 ? "SELL" : "BUY",
-					quantity: newValue < 0 ? newValue * -1 : newValue,
-				},
-			}));
+					instruction: quantity < 0 ? "SELL" : "BUY",
+					quantity: quantity < 0 ? quantity * -1 : quantity,
+				});
+			});
 		},
 		[setOrders, setShowResetButton]
 	);
@@ -236,7 +237,7 @@ export default function StockList({ stockList }: StockListProps) {
 										onChange={(v) =>
 											onChangeOrderQuantity(symbol, +v.target.value)
 										}
-										value={displayQuantity(orders.get(symbol))}
+										value={orders.get(symbol)?.quantity}
 									/>
 									<button
 										onClick={() =>
