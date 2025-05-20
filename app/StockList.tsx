@@ -22,12 +22,6 @@ const SortArrow = ({
 	);
 };
 
-const displayQuantity = (order: Order | undefined): number => {
-	// console.log("displayQuantity", order?.symbol, order?.quantity);
-	if (!order) return 0;
-	return order.quantity * (order.instruction === "SELL" ? -1 : 1);
-};
-
 const getSortFunction = (
 	field: Field,
 	asc: boolean,
@@ -40,8 +34,8 @@ const getSortFunction = (
 				(a.symbol < b.symbol ? -1 : 1) * mult;
 		case "orderQuantity":
 			return (a: PortfolioStock, b: PortfolioStock) =>
-				(displayQuantity(orders.get(b.symbol)) -
-					displayQuantity(orders.get(a.symbol))) *
+				(orders.get(b.symbol)!.displayQuantity -
+					orders.get(a.symbol)!.displayQuantity) *
 				mult;
 		default:
 			return (a: PortfolioStock, b: PortfolioStock) =>
@@ -57,6 +51,7 @@ const generateDefaultOrders = (
 			symbol,
 			quantity: orderQuantity < 0 ? orderQuantity * -1 : orderQuantity,
 			instruction: orderQuantity < 0 ? "SELL" : "BUY",
+			displayQuantity: orderQuantity,
 		});
 		return acc;
 	}, new Map<string, Order>());
@@ -68,19 +63,19 @@ export default function StockList({ stockList }: StockListProps) {
 		field: "orderQuantity",
 		asc: true,
 	});
-	const [orders, setOrders] = useState<Map<string, Order>>(
-		generateDefaultOrders(stockList)
-	);
+	const [orders, setOrders] = useState<{ map: Map<string, Order> }>({
+		map: generateDefaultOrders(stockList),
+	});
 	const [showResetButton, setShowResetButton] = useState(false);
 
 	const sort = (field: Field, asc: boolean) => {
 		setSorted((current) =>
-			[...current].sort(getSortFunction(field, asc, orders))
+			[...current].sort(getSortFunction(field, asc, orders.map))
 		);
 	};
 
 	const onResetOrders = useCallback(() => {
-		setOrders(generateDefaultOrders(stockList));
+		setOrders({ map: generateDefaultOrders(stockList) });
 		setShowResetButton(false);
 	}, [setOrders, setShowResetButton]);
 
@@ -89,11 +84,14 @@ export default function StockList({ stockList }: StockListProps) {
 			// console.log("onChange ", symbol, quantity);
 			setShowResetButton(true);
 			setOrders((current) => {
-				return new Map(current).set(symbol, {
-					symbol,
-					instruction: quantity < 0 ? "SELL" : "BUY",
-					quantity: quantity < 0 ? quantity * -1 : quantity,
-				});
+				return {
+					map: current.map.set(symbol, {
+						symbol,
+						instruction: quantity < 0 ? "SELL" : "BUY",
+						quantity: quantity < 0 ? quantity * -1 : quantity,
+						displayQuantity: quantity,
+					}),
+				};
 			});
 		},
 		[setOrders, setShowResetButton]
@@ -102,7 +100,7 @@ export default function StockList({ stockList }: StockListProps) {
 	const submit = async () => {
 		// setLoading(true);
 		placeOrders(
-			orders
+			orders.map
 				.values()
 				.toArray()
 				.filter(({ quantity }) => quantity !== 0)
@@ -224,7 +222,7 @@ export default function StockList({ stockList }: StockListProps) {
 										onClick={() =>
 											onChangeOrderQuantity(
 												symbol,
-												displayQuantity(orders.get(symbol)) - 1
+												orders.map.get(symbol)!.displayQuantity - 1
 											)
 										}
 										className="rounded-full h-6 w-6 bg-cyan-800 text-cyan-50 font-black text-xs"
@@ -237,13 +235,13 @@ export default function StockList({ stockList }: StockListProps) {
 										onChange={(v) =>
 											onChangeOrderQuantity(symbol, +v.target.value)
 										}
-										value={orders.get(symbol)?.quantity}
+										value={orders.map.get(symbol)?.quantity}
 									/>
 									<button
 										onClick={() =>
 											onChangeOrderQuantity(
 												symbol,
-												displayQuantity(orders.get(symbol)) + 1
+												orders.map.get(symbol)!.displayQuantity + 1
 											)
 										}
 										className="rounded-full h-6 w-6 bg-cyan-800 text-cyan-50 font-black text-xs"
